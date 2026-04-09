@@ -1,0 +1,425 @@
+.cp-container {
+  padding: 1rem;
+}
+
+.cp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.cp-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.cp-subheading {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+}
+
+.refresh-btn.spinning svg {
+  animation: spin 1s linear infinite;
+}
+
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+
+/* Platform Cards */
+.cp-platforms-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.cp-platform-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.cpp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.cpp-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cpp-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cpp-icon.lc { background: rgba(255, 161, 22, 0.1); }
+.cpp-icon.cf { background: rgba(49, 140, 231, 0.1); }
+
+.cpp-brand h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.cpp-username {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cpp-badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lc-badge { background: linear-gradient(135deg, rgba(255, 161, 22, 0.2), transparent); color: #ffa116; border: 1px solid rgba(255, 161, 22, 0.3); }
+.cf-badge.specialist { background: linear-gradient(135deg, rgba(49, 140, 231, 0.2), transparent); color: #818cf8; border: 1px solid rgba(49, 140, 231, 0.3); }
+
+.cpp-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cpp-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cpp-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cpp-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.gradient-text-lc {
+  background: linear-gradient(135deg, #ffa116, #ffdf8c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.specialist-text {
+  color: #818cf8;
+}
+
+.cpp-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cpp-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.cpp-progress-labels .easy { color: #00b8a3; }
+.cpp-progress-labels .medium { color: #ffc01e; }
+.cpp-progress-labels .hard { color: #ff375f; }
+
+.cpp-progress-bar {
+  display: flex;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cpp-bar-fill {
+  height: 100%;
+}
+.easy-fill { background: #00b8a3; }
+.medium-fill { background: #ffc01e; }
+.hard-fill { background: #ff375f; }
+
+.cpp-chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating-chart {
+  width: 100%;
+  height: 60px;
+}
+
+.chart-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.cpp-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.cpp-streak {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffa116;
+  font-weight: 500;
+}
+
+.cpp-contest {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+/* CP Main Grid */
+.cp-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+}
+
+/* Submissions Table */
+.submissions-list {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.sub-header-row {
+  display: flex;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.submission-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  transition: all 0.2s;
+}
+
+.submission-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.submission-row:last-child {
+  border-bottom: none;
+}
+
+.sub-col {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sub-col.prob { flex: 2; font-weight: 500; }
+.sub-col.diff { flex: 1; }
+.sub-col.stat { flex: 1.5; }
+.sub-col.time { flex: 1; color: var(--text-muted); font-size: 0.85rem; }
+
+.plat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.plat-dot.leetcode { background: #ffa116; }
+.plat-dot.codeforces { background: #318ce7; }
+
+.sub-lang {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.diff-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.diff-badge.easy, .diff-badge.\38 00 { color: #00b8a3; background: rgba(0, 184, 163, 0.1); }
+.diff-badge.medium, .diff-badge.\31 200 { color: #ffc01e; background: rgba(255, 192, 30, 0.1); }
+.diff-badge.hard, .diff-badge.\31 800 { color: #ff375f; background: rgba(255, 55, 95, 0.1); }
+
+.status-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.status-text.accepted { color: var(--success); }
+.status-text.rejected { color: var(--error); }
+
+/* Insights */
+.cp-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cp-insight-item {
+  display: flex;
+  gap: 1rem;
+}
+
+.cpi-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cpi-icon.warning {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
+.cp-insight-item h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.cp-insight-item p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.upcoming-contests {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contest-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.c-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.c-name.lc-color { color: #ffa116; }
+.c-name.cf-color { color: #318ce7; }
+
+.c-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* Gradient Panel */
+.gradient-border-panel {
+  position: relative;
+  background: var(--bg-dark);
+}
+
+.gradient-border-panel::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--secondary), var(--primary), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cp-platforms-grid, .cp-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .cp-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .sub-header-row {
+    display: none;
+  }
+  
+  .submission-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
