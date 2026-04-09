@@ -4,6 +4,20 @@ const auth = require('../middleware/auth');
 const Application = require('../models/Application');
 const Job = require('../models/Job');
 
+function getJobRoundDetails(job) {
+  if (Array.isArray(job?.roundDetails) && job.roundDetails.length > 0) {
+    return job.roundDetails;
+  }
+
+  if (Array.isArray(job?.rounds) && job.rounds.length > 0) {
+    return job.rounds.map((round) => (
+      typeof round === 'string' ? { name: round } : round
+    ));
+  }
+
+  return [];
+}
+
 // @route   GET api/applications
 // @desc    Get all applications (for student - their own, for CDC - all)
 // @access  Private
@@ -37,12 +51,16 @@ router.post('/', auth, async (req, res) => {
     if (!job) return res.status(404).json({ msg: 'Job not found' });
 
     // Round setup
-    const rounds = job.rounds.map((roundName) => ({ name: roundName, status: 'pending' }));
+    const jobRounds = getJobRoundDetails(job);
+    const rounds = jobRounds.map((round) => ({
+      name: typeof round === 'string' ? round : round?.name,
+      status: 'pending'
+    }));
 
     const newApp = new Application({
       job: jobId,
       student: req.user.id,
-      totalRounds: job.rounds.length,
+      totalRounds: jobRounds.length,
       rounds: rounds
     });
 

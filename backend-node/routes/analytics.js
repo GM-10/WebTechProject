@@ -4,6 +4,7 @@ const auth = require('../middleware/auth');
 const User = require('../models/User');
 const Application = require('../models/Application');
 const Job = require('../models/Job');
+const CDCStudentProfile = require('../models/CDCStudentProfile');
 
 // @route   GET api/analytics/summary
 // @desc    Get placement overview summary
@@ -15,21 +16,18 @@ router.get('/summary', auth, async (req, res) => {
   }
 
   try {
-    const totalStudents = await User.countDocuments({ role: 'student' });
+    const totalStudents = await CDCStudentProfile.countDocuments();
     const totalJobs = await Job.countDocuments();
-    const activeJobs = await Job.countDocuments({ status: 'open' });
+    const activeJobs = await Job.countDocuments({
+      $or: [
+        { driveStatus: { $in: ['active', 'scheduled'] } },
+        { status: 'open' }
+      ]
+    });
 
-    // Aggregate placement stats
-    const applications = await Application.find().populate('job');
-    const totalOffers = applications.filter(app => ['offered', 'accepted'].includes(app.status)).length;
-    
-    // Number of unique students with an accepted or offered status
-    const placedStudentsSet = new Set(
-      applications
-        .filter(app => ['offered', 'accepted'].includes(app.status))
-        .map(app => app.student.toString())
-    );
-    const placedStudents = placedStudentsSet.size;
+    // Use CDC student profile as the source of truth for placement consistency.
+    const placedStudents = await CDCStudentProfile.countDocuments({ placementStatus: 'Placed' });
+    const totalOffers = placedStudents;
 
     // Sector Distribution based on Job Type or Tags
     const sectorCounts = {
@@ -61,8 +59,7 @@ router.get('/summary', auth, async (req, res) => {
       color: key === 'IT Services' ? '#818cf8' : key === 'Product / SaaS' ? '#38bdf8' : key === 'FinTech' ? '#c084fc' : '#fca5a5'
     }));
 
-    // Generate trends (Monthly)
-    // For now, let's look at applications over the last 6 months
+    // Generate trends (Monthly) using CDC placement profile updates.
     const now = new Date();
     const months = [];
     const counts = [];
@@ -72,11 +69,10 @@ router.get('/summary', auth, async (req, res) => {
       const mLabel = d.toLocaleString('default', { month: 'short' });
       months.push(mLabel);
       
-      // Real count from DB:
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59);
-      const count = await Application.countDocuments({
-        createdAt: { $gte: d, $lte: endOfMonth },
-        status: { $in: ['offered', 'accepted'] }
+      const count = await CDCStudentProfile.countDocuments({
+        placementStatus: 'Placed',
+        updatedAt: { $gte: d, $lte: endOfMonth }
       });
       counts.push(count);
     }
@@ -85,22 +81,30 @@ router.get('/summary', auth, async (req, res) => {
     const recentDrives = await Job.find()
       .sort({ deadline: 1 })
       .limit(5)
-      .select('company role deadline status applicantsCount');
+      .select('company role deadline status driveStatus');
+
+    const driveIds = recentDrives.map(d => d._id);
+    const appCounts = await Application.aggregate([
+      { $match: { job: { $in: driveIds } } },
+      { $group: { _id: '$job', count: { $sum: 1 } } }
+    ]);
+    const appCountMap = {};
+    appCounts.forEach(row => { appCountMap[row._id.toString()] = row.count; });
 
     res.json({
       stats: [
         { label: 'Total Students', value: totalStudents, change: '+2%', color: 'var(--primary)' },
         { label: 'Placed Students', value: placedStudents, change: '+15%', color: 'var(--success)' },
         { label: 'Total Offers', value: totalOffers, change: '+8%', color: 'var(--accent)' },
-        { label: 'Active Companies', value: totalJobs, change: '+5%', color: 'var(--warning)' },
+        { label: 'Active Companies', value: activeJobs, change: '+5%', color: 'var(--warning)' },
       ],
       sectors,
       trends: { labels: months, counts },
       recentDrives: recentDrives.map(d => ({
         company: d.company,
         date: new Date(d.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        status: d.status === 'open' ? 'Confirmed' : 'Pending',
-        applicants: d.applicantsCount || 0
+        status: ['active', 'open'].includes(d.driveStatus || d.status) ? 'Confirmed' : 'Pending',
+        applicants: appCountMap[d._id.toString()] || 0
       }))
     });
 

@@ -13,7 +13,10 @@ import {
   Menu,
   X,
   Briefcase,
-  ClipboardList
+  ClipboardList,
+  GraduationCap,
+  Building2,
+  MessageSquare
 } from 'lucide-react';
 import Notifications from './Notifications';
 import './Layout.css';
@@ -29,8 +32,11 @@ const navItems = [
   { name: 'CP Tracker', path: '/app/cp-tracker', icon: Code2 },
   { name: 'ATS Resume', path: '/app/ats', icon: FileCheck },
   { name: 'Mock Tests', path: '/app/tests', icon: BrainCircuit },
+  { name: 'Announcements', path: '/app/announcements', icon: MessageSquare },
   { divider: true, label: 'ADMIN' },
   { name: 'Analytics (CDC)', path: '/app/analytics', icon: LineChart },
+  { name: 'Students', path: '/app/cdc-students', icon: GraduationCap },
+  { name: 'Companies', path: '/app/cdc-companies', icon: Building2 },
 ];
 
 export default function Layout() {

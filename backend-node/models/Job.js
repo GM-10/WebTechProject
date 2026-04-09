@@ -13,10 +13,33 @@ const JobSchema = new mongoose.Schema({
   tags: [{ type: String }],
   description: { type: String },
   eligibility: { type: String },
-  rounds: [{ type: String }],
   status: { type: String, enum: ['open', 'closed', 'processing'], default: 'open' },
   applicantsCount: { type: Number, default: 0 },
-  postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // The CDC admin who created it
+  postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // The CDC admin who created it
+
+  // ─── ENHANCED ELIGIBILITY CRITERIA ────────────────────────────────────────
+  eligibilityCriteria: {
+    minCGPA: { type: Number, default: 7.0 },
+    allowedBranches: [{ type: String, enum: ['CSE', 'ICT', 'ECE', 'Mechanical', 'Civil', 'EE', 'Chemical'] }],
+    maxTotalBacklogs: { type: Number, default: 0 },
+    allowActiveBacklogs: { type: Boolean, default: false },
+    requiredSkills: [{ type: String }], // e.g., ['Python', 'JavaScript']
+    alreadyPlacedRestriction: { type: Boolean, default: false }, // if true, placed students cannot apply
+  },
+  roundDetails: [{
+    name: { type: String },
+    date: { type: Date },
+    time: { type: String },
+    description: { type: String }
+  }],
+  bondInfo: {
+    hasBond: { type: Boolean, default: false },
+    bondDuration: { type: Number }, // In months
+  },
+  companyCTC: { type: Number }, // Numeric CTC in LPA for sorting
+  selectedCount: { type: Number, default: 0 },
+  acceptedCount: { type: Number, default: 0 },
+  driveStatus: { type: String, enum: ['scheduled', 'active', 'completed', 'cancelled'], default: 'scheduled' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Job', JobSchema);

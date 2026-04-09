@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import {
   Search,
@@ -19,7 +20,9 @@ import {
   TrendingUp,
   Zap,
   ArrowUpDown,
-  CheckCircle2
+  CheckCircle2,
+  Plus,
+  Pencil
 } from 'lucide-react';
 import './Jobs.css';
 
@@ -147,6 +150,7 @@ const filterOptions = {
 };
 
 export default function Jobs() {
+  const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem('user') || '{}') || {};
   const isCDC = user.role === 'cdc' || user.role === 'admin';
 
@@ -164,7 +168,17 @@ export default function Jobs() {
     const fetchJobs = async () => {
       try {
         const res = await api.get('/jobs');
-        setJobs(res.data);
+        const normalizedJobs = (res.data || []).map((job) => ({
+          ...job,
+          tags: Array.isArray(job.tags) ? job.tags : [],
+          rounds: Array.isArray(job.rounds) ? job.rounds : [],
+          applicants: job.applicants ?? job.applicantsCount ?? 0,
+          match: typeof job.match === 'number' ? job.match : 75,
+          logo: job.logo || (job.company ? job.company.charAt(0).toUpperCase() : 'C'),
+          logoColor: job.logoColor || '#818cf8',
+          postedAgo: job.postedAgo || 'Recently posted'
+        }));
+        setJobs(normalizedJobs);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching jobs:', err);
@@ -412,6 +426,7 @@ export default function Jobs() {
                           {rIdx < job.rounds.length - 1 && <span className="round-arrow">→</span>}
                         </React.Fragment>
                       ))}
+                      {job.rounds.length === 0 && <span className="round-step">Process details will be shared by CDC</span>}
                     </div>
                   </div>
                   <div className="job-detail-section">

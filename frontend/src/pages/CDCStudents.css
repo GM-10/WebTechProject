@@ -1,0 +1,816 @@
+/* ─── CDC STUDENTS PAGE ──────────────────────────────────────────────────────── */
+
+.cdc-students-page {
+  padding: 1rem;
+}
+
+.cdc-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+}
+
+.cdc-page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.cdc-page-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ─── STATS ──────────────────────────────────────────────────────────────────── */
+
+.cdc-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.cdc-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.cdc-stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cdc-stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cdc-stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* ─── FILTER BAR ─────────────────────────────────────────────────────────────── */
+
+.cdc-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: 14px;
+}
+
+.cdc-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.cdc-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.cdc-search-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem 0.6rem 2.5rem;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.cdc-search-input:focus {
+  border-color: var(--primary);
+}
+
+.cdc-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.cdc-filters-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cdc-filter-select-wrap {
+  position: relative;
+}
+
+.cdc-filter-select {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.55rem 2rem 0.55rem 0.85rem;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.cdc-filter-select:focus { border-color: var(--primary); }
+
+.cdc-select-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.cdc-cgpa-input {
+  width: 100px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.cdc-cgpa-input:focus { border-color: var(--primary); }
+.cdc-cgpa-input::placeholder { color: var(--text-muted); }
+
+.cdc-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.75rem;
+  color: var(--error);
+  border-color: transparent;
+}
+
+.cdc-filter-result-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* ─── TABLE ──────────────────────────────────────────────────────────────────── */
+
+.cdc-table-container {
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.cdc-table-scroll {
+  overflow-x: auto;
+}
+
+.cdc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.cdc-table thead tr {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.cdc-table th {
+  padding: 1rem 1.1rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.cdc-table-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cdc-table-row:hover {
+  background: rgba(129, 140, 248, 0.06);
+}
+
+.cdc-table td {
+  padding: 0.85rem 1.1rem;
+  vertical-align: middle;
+}
+
+.cdc-table-empty {
+  text-align: center;
+  padding: 3rem !important;
+  color: var(--text-muted);
+}
+.cdc-table-empty p { margin-top: 0.75rem; font-size: 0.9rem; }
+
+/* Student cell */
+.cdc-student-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cdc-table-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.cdc-student-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.cdc-muted {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+/* ATS bar */
+.ats-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ats-bar-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  min-width: 60px;
+}
+
+.ats-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.ats-bar-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  min-width: 24px;
+}
+
+/* CP cell */
+.cdc-cp-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cdc-view-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(129, 140, 248, 0.05);
+}
+
+.cdc-view-btn:hover {
+  background: rgba(129, 140, 248, 0.15);
+  transform: scale(1.05);
+}
+
+/* ─── BADGES ─────────────────────────────────────────────────────────────────── */
+
+.cdc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-success  { background: rgba(16, 185, 129, 0.12); color: var(--success); }
+.badge-warning  { background: rgba(245, 158, 11, 0.12); color: var(--warning); }
+.badge-error    { background: rgba(239, 68, 68, 0.12);  color: var(--error);   }
+.badge-info     { background: rgba(56, 189, 248, 0.12); color: var(--accent);  }
+.badge-muted    { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
+.badge-branch   { background: rgba(192, 132, 252, 0.12); color: var(--secondary); }
+
+/* ─── MODAL ──────────────────────────────────────────────────────────────────── */
+
+.cdc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  animation: fadeBackdrop 0.2s ease;
+}
+
+@keyframes fadeBackdrop { from { opacity: 0; } to { opacity: 1; } }
+
+.cdc-modal {
+  width: min(700px, 95vw);
+  height: 100vh;
+  border-radius: 20px 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideInModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: rgba(14, 14, 18, 0.97);
+  border-right: none;
+}
+
+@keyframes slideInModal {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.cdc-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1.75rem 1rem;
+  border-bottom: 1px solid var(--glass-border);
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.cdc-modal-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.cdc-modal-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.cdc-modal-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.cdc-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cdc-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* ─── MODAL TABS ─────────────────────────────────────────────────────────────── */
+
+.cdc-modal-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--glass-border);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.cdc-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.75rem 1rem;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.cdc-tab-btn:hover { color: var(--text-main); }
+.cdc-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.cdc-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.75rem;
+}
+
+.cdc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+/* ─── TAB: OVERVIEW ──────────────────────────────────────────────────────────── */
+
+.cdc-overview-top {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.cdc-readiness-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-ring-svg { display: block; }
+
+.cdc-readiness-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cdc-quick-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  flex: 1;
+}
+
+.cdc-quick-stat {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.cdc-qs-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.cdc-qs-val {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.cdc-section-box {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.success-box { border-color: rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.04); }
+
+.cdc-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.cdc-cp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.88rem;
+}
+
+.cdc-cp-handle { color: var(--primary); font-weight: 500; }
+
+.cdc-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cdc-skill-chip {
+  padding: 4px 12px;
+  background: rgba(129, 140, 248, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--primary);
+}
+
+/* ─── TAB: RESUME ────────────────────────────────────────────────────────────── */
+
+.cdc-ats-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-radius: 14px;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cdc-ats-score-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cdc-ats-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.cdc-skill-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.cdc-skill-name {
+  width: 130px;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.cdc-skill-bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+}
+
+.cdc-skill-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 0.6s ease;
+}
+
+.cdc-skill-pct {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ─── TAB: APPLICATIONS ──────────────────────────────────────────────────────── */
+
+.cdc-tab-apps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cdc-app-card {
+  padding: 1rem 1.25rem;
+  border-radius: 14px !important;
+}
+
+.cdc-app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.cdc-app-company {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cdc-rounds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cdc-round-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255,255,255,0.025);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.cdc-round-name { flex: 1; }
+
+/* ─── TAB: TESTS ─────────────────────────────────────────────────────────────── */
+
+.cdc-test-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  height: 160px;
+  padding: 0 0.5rem;
+}
+
+.cdc-test-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+.cdc-test-bar-track {
+  flex: 1;
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.cdc-test-bar-fill {
+  width: 100%;
+  border-radius: 6px;
+  transition: height 0.8s ease;
+}
+
+.cdc-test-bar-pct {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cdc-test-bar-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.cdc-test-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.85rem;
+}
+.cdc-test-row:last-child { border-bottom: none; }
+.cdc-test-cat { flex: 1; font-weight: 500; }
+
+/* ─── TAB: NOTES ─────────────────────────────────────────────────────────────── */
+
+.cdc-note-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.cdc-note-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 80px;
+}
+.cdc-note-textarea:focus { border-color: var(--primary); }
+.cdc-note-textarea::placeholder { color: var(--text-muted); }
+
+.cdc-note-save-btn {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cdc-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cdc-note-item {
+  padding: 1rem 1.25rem !important;
+  border-radius: 12px !important;
+}
+
+.cdc-note-text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.cdc-note-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Empty state */
+.cdc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+}
+.cdc-empty p { color: var(--text-muted); font-size: 0.9rem; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .cdc-page-header { flex-direction: column; }
+  .cdc-modal { width: 100vw; border-radius: 20px 20px 0 0; height: 90vh; align-self: flex-end; }
+  .cdc-modal-backdrop { align-items: flex-end; }
+  .cdc-overview-top { flex-direction: column; align-items: flex-start; }
+  .cdc-filter-bar { flex-direction: column; align-items: stretch; }
+  .cdc-cgpa-input { width: 100%; }
+}

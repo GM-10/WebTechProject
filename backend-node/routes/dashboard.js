@@ -4,6 +4,7 @@ const auth = require('../middleware/auth');
 const User = require('../models/User');
 const Application = require('../models/Application');
 const Job = require('../models/Job');
+const CDCStudentProfile = require('../models/CDCStudentProfile');
 
 // @route   GET api/dashboard/stats
 // @desc    Get role-based dashboard statistics
@@ -12,9 +13,14 @@ router.get('/stats', auth, async (req, res) => {
   try {
     if (req.user.role === 'cdc' || req.user.role === 'admin') {
       // CDC Stats
-      const totalStudents = await User.countDocuments({ role: 'student' });
-      const placedStudentsCount = await Application.distinct('student', { status: { $in: ['offered', 'accepted'] } });
-      const activeJobs = await Job.countDocuments({ status: 'open' });
+      const totalStudents = await CDCStudentProfile.countDocuments();
+      const placedStudentsCount = await CDCStudentProfile.countDocuments({ placementStatus: 'Placed' });
+      const activeJobs = await Job.countDocuments({
+        $or: [
+          { driveStatus: { $in: ['active', 'scheduled'] } },
+          { status: 'open' }
+        ]
+      });
       const pendingApps = await Application.countDocuments({ status: { $in: ['applied', 'in-progress'] } });
 
       // Recent Activity Feed for CDC
@@ -28,7 +34,7 @@ router.get('/stats', auth, async (req, res) => {
         role: req.user.role,
         stats: [
           { label: 'Total Students', value: totalStudents },
-          { label: 'Placement %', value: totalStudents > 0 ? Math.round((placedStudentsCount.length / totalStudents) * 100) : 0 },
+          { label: 'Placement %', value: totalStudents > 0 ? Math.round((placedStudentsCount / totalStudents) * 100) : 0 },
           { label: 'Active Openings', value: activeJobs },
           { label: 'Pending Reviews', value: pendingApps }
         ],

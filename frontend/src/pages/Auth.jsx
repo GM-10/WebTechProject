@@ -37,7 +37,6 @@ export default function Auth() {
 
       setLoading(false);
       navigate(res.data.user.role === 'cdc' ? '/app/analytics' : '/app/dashboard');
-      window.location.reload(); // Refresh to catch storage changes
     } catch (err) {
       console.error('Auth error:', err);
       alert(err.response?.data?.msg || 'Authentication failed');
