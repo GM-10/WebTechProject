@@ -17,8 +17,6 @@ import {
   Link,
   Trophy,
   Star,
-  ChevronDown,
-  ChevronUp,
   Calendar
 } from 'lucide-react';
 import './Profile.css';
@@ -88,7 +86,6 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editProfile, setEditProfile] = useState(initialProfile);
   const [newSkill, setNewSkill] = useState('');
-  const [showAllSkills, setShowAllSkills] = useState(false);
   const [resumeDragging, setResumeDragging] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -99,7 +96,18 @@ export default function Profile() {
         const data = res.data;
         setProfile(data);
         setEditProfile(data);
-        if (data.skills) setSkills(data.skills);
+        if (data.skills) {
+          const normalizedSkills = data.skills.map((skill) => {
+            if (typeof skill === 'string') {
+              return { name: skill, level: 50 };
+            }
+            return {
+              ...skill,
+              level: Number.isFinite(Number(skill.level)) ? Number(skill.level) : 50
+            };
+          });
+          setSkills(normalizedSkills);
+        }
         if (data.education) setEduList(data.education);
         if (data.achievements) setAchList(data.achievements);
         setLoading(false);
@@ -159,7 +167,13 @@ export default function Profile() {
     }
   };
 
-  const visibleSkills = showAllSkills ? skills : skills.slice(0, 5);
+  const visibleSkills = skills;
+
+  const getSkillLevel = (skill) => {
+    const parsed = Number(skill?.level);
+    if (!Number.isFinite(parsed)) return 0;
+    return Math.max(0, Math.min(100, Math.round(parsed)));
+  };
 
   const getSkillColor = (level) => {
     if (level >= 80) return 'var(--success)';
@@ -236,7 +250,7 @@ export default function Profile() {
           </div>
           <div className="pq-divider"></div>
           <div className="pq-stat">
-            <span className="pq-value" style={{ color: 'var(--accent)' }}>{achievements.length}</span>
+            <span className="pq-value" style={{ color: 'var(--accent)' }}>{achList.length}</span>
             <span className="pq-label">Achievements</span>
           </div>
           <div className="pq-divider"></div>
@@ -369,7 +383,7 @@ export default function Profile() {
               <h3 className="panel-title"><GraduationCap size={20} /> Education</h3>
             </div>
             <div className="education-timeline">
-              {education.map((edu, idx) => (
+              {eduList.map((edu, idx) => (
                 <div key={idx} className={`edu-item ${edu.status === 'current' ? 'current' : ''}`}>
                   <div className="edu-timeline-dot"></div>
                   <div className="edu-content">
@@ -449,19 +463,27 @@ export default function Profile() {
             <div className="skills-list">
               {visibleSkills.map((skill) => (
                 <div key={skill.name} className="skill-row">
+                  {(() => {
+                    const skillLevel = getSkillLevel(skill);
+                    const skillColor = getSkillColor(skillLevel);
+                    return (
+                      <>
                   <div className="skill-info">
                     <span className="skill-name">{skill.name}</span>
-                    <span className="skill-level" style={{ color: getSkillColor(skill.level) }}>{skill.level}%</span>
+                    <span className="skill-level" style={{ color: skillColor }}>{skillLevel}%</span>
                   </div>
                   <div className="skill-bar-track">
                     <div
                       className="skill-bar-fill"
                       style={{
-                        width: `${skill.level}%`,
-                        background: `linear-gradient(90deg, ${getSkillColor(skill.level)}, ${getSkillColor(skill.level)}88)`
+                        width: `${skillLevel}%`,
+                        background: `linear-gradient(90deg, ${skillColor}, ${skillColor}88)`
                       }}
                     ></div>
                   </div>
+                      </>
+                    );
+                  })()}
                   {isEditing && (
                     <button className="skill-remove" onClick={() => removeSkill(skill.name)}>
                       <X size={14} />
@@ -470,15 +492,6 @@ export default function Profile() {
                 </div>
               ))}
             </div>
-
-            {skills.length > 5 && (
-              <button
-                className="btn btn-ghost show-more-btn"
-                onClick={() => setShowAllSkills(!showAllSkills)}
-              >
-                {showAllSkills ? <><ChevronUp size={16} /> Show Less</> : <><ChevronDown size={16} /> Show All ({skills.length})</>}
-              </button>
-            )}
 
             {isEditing && (
               <div className="add-skill-row">
@@ -503,7 +516,7 @@ export default function Profile() {
               <h3 className="panel-title"><Trophy size={20} /> Achievements</h3>
             </div>
             <div className="achievements-list">
-              {achievements.map((ach, idx) => {
+              {achList.map((ach, idx) => {
                 const Icon = ach.icon;
                 return (
                   <div key={idx} className="achievement-item">

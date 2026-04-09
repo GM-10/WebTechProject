@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, FileText, CheckCircle, AlertCircle, RefreshCw, BarChart, FileSearch, ShieldCheck, Target } from 'lucide-react';
+import api from '../utils/api';
 import './AtsChecker.css';
 
 export default function AtsChecker() {
@@ -23,32 +24,25 @@ export default function AtsChecker() {
     }
   };
 
-  const analyzeResume = () => {
+  const analyzeResume = async () => {
     if (!file) return;
     setIsAnalyzing(true);
-    
-    // Simulate API call for ATS analysis
-    setTimeout(() => {
-      setResult({
-        score: 78,
-        status: 'Good',
-        readability: 'High',
-        formatting: 'Pass',
-        keywordMatch: 65,
-        strengths: [
-          'Strong action verbs used in experience section',
-          'Education timeline is clearly formatted',
-          'Contact information is complete and parsable'
-        ],
-        improvements: [
-          'Add quantitative metrics to your recent projects',
-          'Missing key industry buzzwords for "Software Engineer"',
-          'Include a dedicated certifications section'
-        ],
-        parsedKeywords: ['JavaScript', 'React', 'Node.js', 'Java', 'SQL', 'Git', 'Agile']
+
+    try {
+      const formData = new FormData();
+      formData.append('targetRole', targetRole);
+      formData.append('resume', file);
+
+      const res = await api.post('/profile/ats-analyze', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
+      setResult(res.data);
+    } catch (err) {
+      console.error('ATS analysis error:', err);
+      alert(err.response?.data?.msg || 'Failed to run ATS analysis. Ensure backend is running and API key is configured.');
+    } finally {
       setIsAnalyzing(false);
-    }, 2500);
+    }
   };
 
   const resetAnalyzer = () => {

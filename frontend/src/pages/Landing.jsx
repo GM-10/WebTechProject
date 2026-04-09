@@ -22,14 +22,6 @@ export default function Landing() {
   const [isLogin, setIsLogin] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    if (token) {
-      navigate(user.role === 'cdc' ? '/app/analytics' : '/app/dashboard');
-    }
-  }, [navigate]);
   
   const [formData, setFormData] = React.useState({
     email: '',
@@ -50,7 +42,6 @@ export default function Landing() {
 
       setLoading(false);
       navigate(res.data.user.role === 'cdc' ? '/app/analytics' : '/app/dashboard');
-      window.location.reload();
     } catch (err) {
       console.error('Auth error:', err);
       alert(err.response?.data?.msg || 'Authentication failed');
@@ -58,27 +49,24 @@ export default function Landing() {
     }
   };
 
-  const handleDemoLogin = (role) => {
-    // Demo User Data
-    const demoUser = role === 'student' ? {
-      id: 'demo_student_001',
-      name: 'Alex Demo',
-      email: 'alex@demo.edu',
-      role: 'student'
-    } : {
-      id: 'demo_cdc_001',
-      name: 'Dr. Jane Admin',
-      email: 'jane.admin@demo.edu',
-      role: 'cdc'
-    };
+  const handleDemoLogin = async (role) => {
+    setLoading(true);
+    const demoEmail = role === 'student' ? 'student@demo.com' : 'cdc@demo.com';
+    try {
+      const res = await api.post('/auth/login', {
+        email: demoEmail,
+        password: 'pass123'
+      });
 
-    // Simulate Auth
-    sessionStorage.setItem('token', 'demo_jwt_token_12345');
-    sessionStorage.setItem('user', JSON.stringify(demoUser));
-    
-    // Redirect to relevant starting point
-    navigate(role === 'student' ? '/app/dashboard' : '/app/analytics');
-    window.location.reload(); 
+      sessionStorage.setItem('token', res.data.token);
+      sessionStorage.setItem('user', JSON.stringify(res.data.user));
+      navigate(res.data.user.role === 'cdc' ? '/app/analytics' : '/app/dashboard');
+    } catch (err) {
+      console.error('Demo login error:', err);
+      alert(err.response?.data?.msg || 'Demo login failed. Ensure backend is running.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -4,19 +4,43 @@ import io from 'socket.io-client';
 
 import './Notifications.css';
 
-const socket = io('http://localhost:5000', { autoConnect: false });
+const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+const socket = io(socketUrl, { autoConnect: false, reconnection: true, reconnectionAttempts: 5 });
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [socketStatus, setSocketStatus] = useState('disconnected');
+  const [socketError, setSocketError] = useState('');
   const user = JSON.parse(sessionStorage.getItem('user') || '{}') || {};
 
 
   useEffect(() => {
     if (!user.id) return;
 
+    const handleConnect = () => {
+      setSocketStatus('connected');
+      setSocketError('');
+    };
+
+    const handleDisconnect = (reason) => {
+      setSocketStatus('disconnected');
+      if (reason !== 'io client disconnect') {
+        setSocketError('Live notifications are reconnecting.');
+      }
+    };
+
+    const handleConnectError = (error) => {
+      console.error('Socket connection error:', error);
+      setSocketStatus('error');
+      setSocketError('Live notifications are unavailable right now.');
+    };
+
     socket.connect();
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('connect_error', handleConnectError);
 
     socket.on('notification', (data) => {
       // Only show if it's for this student or if it's a general broadcast
@@ -38,6 +62,9 @@ export default function Notifications() {
 
     return () => {
       socket.off('notification');
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('connect_error', handleConnectError);
       socket.disconnect();
     };
   }, [user.id]);
@@ -91,6 +118,12 @@ export default function Notifications() {
               <button className="clear-all" onClick={() => { setNotifications([]); setUnreadCount(0); }}>Clear All</button>
             )}
           </div>
+          {socketError && (
+            <div className="notif-empty" style={{ margin: '0 0 12px 0', padding: '10px 12px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.08)' }}>
+              <p style={{ margin: 0 }}>{socketError}</p>
+              <span style={{ opacity: 0.8 }}>Status: {socketStatus}</span>
+            </div>
+          )}
           <div className="notif-list">
             {notifications.length > 0 ? (
               notifications.map((notif) => (

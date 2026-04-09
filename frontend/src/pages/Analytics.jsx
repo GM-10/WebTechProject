@@ -16,6 +16,8 @@ import {
 import api from '../utils/api';
 import './Analytics.css';
 
+const TOKEN_INVALID_ERROR = 'Session expired or invalid token. Please login again from Landing page.';
+
 export default function Analytics() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,16 @@ export default function Analytics() {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching analytics:', err);
-        setError('Failed to load placement analytics. Please ensure you have CDC permissions.');
+        const status = err?.response?.status;
+        const msg = err?.response?.data?.msg;
+
+        if (status === 401) {
+          setError(TOKEN_INVALID_ERROR);
+        } else if (status === 403) {
+          setError('Access denied. Analytics is available only for CDC/Admin accounts.');
+        } else {
+          setError(msg || 'Failed to load placement analytics. Please ensure backend is running and try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -60,12 +71,26 @@ export default function Analytics() {
   }
 
   if (error) {
+    const isTokenInvalid = error === TOKEN_INVALID_ERROR;
+
     return (
       <div className="flex-center" style={{ height: '80vh' }}>
         <div className="panel glass-panel text-center p-8">
           <AlertCircle size={48} color="var(--error)" className="mb-4" />
           <h3>{error}</h3>
-          <button className="btn btn-primary mt-4" onClick={() => window.location.reload()}>Retry</button>
+          {isTokenInvalid ? (
+            <button
+              className="btn btn-primary mt-4"
+              onClick={() => {
+                sessionStorage.clear();
+                window.location.href = '/';
+              }}
+            >
+              Go To Landing
+            </button>
+          ) : (
+            <button className="btn btn-primary mt-4" onClick={() => window.location.reload()}>Retry</button>
+          )}
         </div>
       </div>
     );

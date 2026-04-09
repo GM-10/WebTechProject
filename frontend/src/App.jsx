@@ -10,6 +10,9 @@ import SkillGap from './pages/SkillGap';
 import CPTracker from './pages/CPTracker';
 import MockTests from './pages/MockTests';
 import Analytics from './pages/Analytics';
+import CDCStudents from './pages/CDCStudents';
+import CDCCompanies from './pages/CDCCompanies';
+import Announcements from './pages/Announcements';
 import Auth from './pages/Auth';
 import Landing from './pages/Landing';
 import './App.css';
@@ -72,6 +75,15 @@ function App() {
           <Route path="analytics" element={
             <RoleProtectedRoute allowedRoles={['cdc', 'admin']}><Analytics /></RoleProtectedRoute>
           } />
+          <Route path="cdc-students" element={
+            <RoleProtectedRoute allowedRoles={['cdc', 'admin']}><CDCStudents /></RoleProtectedRoute>
+          } />
+          <Route path="cdc-companies" element={
+            <RoleProtectedRoute allowedRoles={['cdc', 'admin']}><CDCCompanies /></RoleProtectedRoute>
+          } />
+          
+          {/* Announcements - Both CDC and Students */}
+          <Route path="announcements" element={<Announcements />} />
         </Route>
 
         {/* Redirect unknown routes */}

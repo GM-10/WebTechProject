@@ -55,7 +55,12 @@ const seedData = async () => {
       tags: ['SDE', 'Python', 'Cloud'],
       description: 'Join the Google Cloud team to build next-gen scalability.',
       postedBy: cdc.id,
-      applicantsCount: 120
+      applicantsCount: 120,
+      roundDetails: [
+        { name: 'Online Assessment' },
+        { name: 'Technical Interview' },
+        { name: 'HR Interview' }
+      ]
     });
     await googleJob.save();
 
@@ -71,7 +76,12 @@ const seedData = async () => {
       tags: ['Java', 'Algorithms', 'High Scale'],
       description: 'Work with Amazon Retail systems on core backend features.',
       postedBy: cdc.id,
-      applicantsCount: 550
+      applicantsCount: 550,
+      roundDetails: [
+        { name: 'Online Assessment' },
+        { name: 'Technical Interview' },
+        { name: 'Bar Raiser' }
+      ]
     });
     await amazonJob.save();
 
@@ -87,7 +97,12 @@ const seedData = async () => {
         tags: ['React', 'TypeScript', 'Web'],
         description: 'Build modern UIs for Microsoft Teams.',
         postedBy: cdc.id,
-        applicantsCount: 200
+        applicantsCount: 200,
+        roundDetails: [
+          { name: 'Online Assessment' },
+          { name: 'Technical Interview' },
+          { name: 'HR Interview' }
+        ]
     });
     await microsoftJob.save();
     console.log('Demo Jobs created!');
