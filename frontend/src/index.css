@@ -50,6 +50,10 @@ body {
   background-attachment: fixed;
 }
 
+body.landing-page {
+  overflow: hidden;
+}
+
 a {
   color: var(--primary);
   text-decoration: none;

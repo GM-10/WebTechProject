@@ -1,9 +1,11 @@
 .landing-wrapper {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
   background: var(--bg-dark);
   color: var(--text-main);
   overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0 4rem;
   display: flex;
   flex-direction: column;
