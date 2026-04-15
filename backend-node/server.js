@@ -102,6 +102,7 @@ async function startServer() {
     try {
       const User = require('./models/User');
       const Job = require('./models/Job');
+      const { Question } = require('./models/Test');
       const cdcExists = await User.findOne({ role: 'cdc' });
       if (!cdcExists) {
         console.log('Fresh DB detected — running auto-seed...');
@@ -116,6 +117,14 @@ async function startServer() {
         const { autoSeedCompanies } = require('./seedCompanies');
         await autoSeedCompanies();
         console.log('Company seed complete!');
+      }
+
+      const questionsCount = await Question.countDocuments();
+      if (questionsCount === 0) {
+        console.log('No questions found — running question seed...');
+        const { seedQuestions } = require('./seedQuestions');
+        await seedQuestions();
+        console.log('Question seed complete!');
       }
     } catch (seedErr) {
       console.warn('Auto-seed warning:', seedErr.message);
