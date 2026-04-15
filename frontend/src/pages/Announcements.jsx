@@ -40,7 +40,7 @@ function CreateAnnouncementModal({ onClose, onSave }) {
 
     try {
       setLoading(true);
-      await api.post('/api/announcements', form);
+      await api.post('/announcements', form);
       alert('Announcement created successfully!');
       onSave();
       onClose();
@@ -216,7 +216,7 @@ export default function Announcements() {
   const fetchAnnouncements = useCallback(async () => {
     try {
       setLoading(true);
-      const endpoint = isCDC ? '/api/announcements/cdc/all' : '/api/announcements';
+      const endpoint = isCDC ? '/announcements/cdc/all' : '/announcements';
       const res = await api.get(endpoint);
       setAnnouncements(res.data);
       setFiltered(res.data);
@@ -249,7 +249,7 @@ export default function Announcements() {
   const handleDelete = async (id) => {
     if (window.confirm('Delete this announcement?')) {
       try {
-        await api.delete(`/api/announcements/${id}`);
+        await api.delete(`/announcements/${id}`);
         setAnnouncements(announcements.filter(a => a._id !== id));
       } catch (err) {
         alert('Failed to delete announcement');
