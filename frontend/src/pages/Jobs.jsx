@@ -26,123 +26,6 @@ import {
 } from 'lucide-react';
 import './Jobs.css';
 
-const mockJobs = [
-  {
-    id: 1,
-    role: 'Software Engineer',
-    company: 'Google',
-    logo: 'G',
-    logoColor: '#4285f4',
-    location: 'Bangalore, India',
-    type: 'Full Time',
-    ctc: '₹25-35 LPA',
-    deadline: 'Apr 15, 2026',
-    postedAgo: '2 days ago',
-    tags: ['Java', 'React', 'Cloud', 'DSA'],
-    match: 92,
-    applicants: 156,
-    description: 'Join our engineering team to build products that impact billions of users worldwide. Work on large-scale distributed systems.',
-    eligibility: 'CGPA ≥ 8.0 | No active backlogs',
-    rounds: ['Online Assessment', 'Technical Interview (2)', 'HR Interview'],
-    status: 'open',
-  },
-  {
-    id: 2,
-    role: 'SDE-1',
-    company: 'Amazon',
-    logo: 'A',
-    logoColor: '#ff9900',
-    location: 'Hyderabad, India',
-    type: 'Full Time',
-    ctc: '₹20-30 LPA',
-    deadline: 'Apr 20, 2026',
-    postedAgo: '5 days ago',
-    tags: ['AWS', 'Node.js', 'System Design', 'DSA'],
-    match: 88,
-    applicants: 210,
-    description: 'Build and maintain scalable backend services powering Amazon\'s e-commerce platform.',
-    eligibility: 'CGPA ≥ 7.5 | CS/IT branch',
-    rounds: ['Online Assessment', 'Technical Interview (3)', 'Bar Raiser'],
-    status: 'open',
-  },
-  {
-    id: 3,
-    role: 'Frontend Developer Intern',
-    company: 'Microsoft',
-    logo: 'M',
-    logoColor: '#00a4ef',
-    location: 'Noida, India',
-    type: 'Internship',
-    ctc: '₹80K/month',
-    deadline: 'Apr 10, 2026',
-    postedAgo: '1 week ago',
-    tags: ['React', 'TypeScript', 'CSS', 'Azure'],
-    match: 95,
-    applicants: 89,
-    description: 'Work on the next generation of Microsoft 365 applications with cutting-edge frontend technologies.',
-    eligibility: 'CGPA ≥ 7.0 | Pre-final year',
-    rounds: ['Online Assessment', 'Technical Interview', 'HR Interview'],
-    status: 'open',
-  },
-  {
-    id: 4,
-    role: 'Data Engineer',
-    company: 'Flipkart',
-    logo: 'F',
-    logoColor: '#2874f0',
-    location: 'Bangalore, India',
-    type: 'Full Time',
-    ctc: '₹18-25 LPA',
-    deadline: 'Apr 25, 2026',
-    postedAgo: '3 days ago',
-    tags: ['Python', 'Spark', 'SQL', 'Kafka'],
-    match: 72,
-    applicants: 134,
-    description: 'Design data pipelines and architecture powering Flipkart\'s data-driven decisions.',
-    eligibility: 'CGPA ≥ 7.0 | Any branch',
-    rounds: ['Online Assessment', 'Technical Interview (2)', 'Hiring Manager'],
-    status: 'open',
-  },
-  {
-    id: 5,
-    role: 'Product Engineer',
-    company: 'Razorpay',
-    logo: 'R',
-    logoColor: '#3395ff',
-    location: 'Bangalore, India',
-    type: 'Full Time',
-    ctc: '₹22-28 LPA',
-    deadline: 'May 01, 2026',
-    postedAgo: '1 day ago',
-    tags: ['Go', 'React', 'Microservices', 'Payments'],
-    match: 80,
-    applicants: 78,
-    description: 'Build the future of payments infrastructure for millions of businesses across India.',
-    eligibility: 'CGPA ≥ 7.5 | CS/IT/ECE branch',
-    rounds: ['Coding Round', 'System Design', 'Cultural Fit'],
-    status: 'open',
-  },
-  {
-    id: 6,
-    role: 'ML Engineer Intern',
-    company: 'Adobe',
-    logo: 'Ad',
-    logoColor: '#ff0000',
-    location: 'Noida, India',
-    type: 'Internship',
-    ctc: '₹60K/month',
-    deadline: 'Apr 18, 2026',
-    postedAgo: '4 days ago',
-    tags: ['Python', 'TensorFlow', 'NLP', 'Computer Vision'],
-    match: 65,
-    applicants: 192,
-    description: 'Research and develop ML models powering Adobe Creative Cloud\'s intelligent features.',
-    eligibility: 'CGPA ≥ 8.0 | ML coursework required',
-    rounds: ['Resume Shortlist', 'ML Coding Round', 'Research Discussion'],
-    status: 'open',
-  },
-];
-
 const filterOptions = {
   type: ['Full Time', 'Internship', 'Part Time'],
   location: ['Bangalore', 'Hyderabad', 'Noida', 'Mumbai', 'Remote'],
@@ -159,6 +42,8 @@ export default function Jobs() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
+  const [selectedLocation, setSelectedLocation] = useState('All');
+  const [selectedSort, setSelectedSort] = useState('Recently Posted');
   const [savedJobs, setSavedJobs] = useState(new Set());
   const [expandedJob, setExpandedJob] = useState(null);
   const [appliedJobs, setAppliedJobs] = useState(new Set());
@@ -209,12 +94,26 @@ export default function Jobs() {
     }
   };
 
-  const filteredJobs = jobs.filter(job => {
+  const getCtcValue = (ctc) => {
+    if (!ctc) return 0;
+    const match = String(ctc).match(/([0-9]+(?:\.[0-9]+)?)/);
+    return match ? parseFloat(match[1]) : 0;
+  };
+
+  const sortedJobs = [...jobs].sort((a, b) => {
+    if (selectedSort === 'CTC') return getCtcValue(b.ctc) - getCtcValue(a.ctc);
+    if (selectedSort === 'Deadline') return new Date(a.deadline || 0) - new Date(b.deadline || 0);
+    if (selectedSort === 'Match Score') return (b.match || 0) - (a.match || 0);
+    return new Date(b.postedDate || b.createdAt || 0) - new Date(a.postedDate || a.createdAt || 0);
+  });
+
+  const filteredJobs = sortedJobs.filter(job => {
     const matchesSearch = job.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (job.tags && job.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
     const matchesType = selectedType === 'All' || job.type === selectedType;
-    return matchesSearch && matchesType;
+    const matchesLocation = selectedLocation === 'All' || job.location === selectedLocation;
+    return matchesSearch && matchesType && matchesLocation;
   });
 
   if (loading) {
@@ -259,7 +158,7 @@ export default function Jobs() {
             </div>
           </div>
           {isCDC && (
-             <button className="btn btn-primary ml-4" onClick={() => {/* Handle Create Job */}}>
+             <button className="btn btn-primary ml-4" onClick={() => navigate('/app/cdc-companies')}>
                <Plus size={18} /> Add New Drive
              </button>
           )}
@@ -312,8 +211,14 @@ export default function Jobs() {
           <div className="filter-group">
             <label>Location</label>
             <div className="filter-chips">
-              {filterOptions.location.map(loc => (
-                <button key={loc} className="filter-chip">{loc}</button>
+              {['All', ...filterOptions.location].map(loc => (
+                <button
+                  key={loc}
+                  className={`filter-chip ${selectedLocation === loc ? 'active' : ''}`}
+                  onClick={() => setSelectedLocation(loc)}
+                >
+                  {loc}
+                </button>
               ))}
             </div>
           </div>
@@ -321,7 +226,11 @@ export default function Jobs() {
             <label>Sort By</label>
             <div className="filter-chips">
               {filterOptions.sortBy.map(s => (
-                <button key={s} className="filter-chip">
+                <button
+                  key={s}
+                  className={`filter-chip ${selectedSort === s ? 'active' : ''}`}
+                  onClick={() => setSelectedSort(s)}
+                >
                   <ArrowUpDown size={12} /> {s}
                 </button>
               ))}
@@ -393,12 +302,11 @@ export default function Jobs() {
                 {!isCDC && (
                   <div className="job-listing-actions">
                     <button
-                      className={`save-btn ${savedJobs.has(job.id) ? 'saved' : ''}`}
+                      className={`save-btn ${savedJobs.has(job._id) ? 'saved' : ''}`}
                       onClick={(e) => { e.stopPropagation(); toggleSave(job._id); }}
                       title={savedJobs.has(job._id) ? 'Unsave' : 'Save'}
-
                     >
-                      {savedJobs.has(job.id) ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                      {savedJobs.has(job._id) ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
                     </button>
                   </div>
                 )}
@@ -444,7 +352,7 @@ export default function Jobs() {
                       <button className="btn btn-primary" onClick={() => navigate('/app/applications')}>
                         <Users size={16} /> View Applicants
                       </button>
-                      <button className="btn btn-ghost border-btn">
+                      <button className="btn btn-ghost border-btn" onClick={() => navigate('/app/cdc-companies')}>
                         <Pencil size={16} /> Edit Drive
                       </button>
                     </>

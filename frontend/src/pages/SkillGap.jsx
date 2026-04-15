@@ -1,60 +1,36 @@
-import React, { useState } from 'react';
-import { Target, TrendingUp, CheckCircle2, AlertCircle, BookOpen, ChevronRight, Sparkles, BookMarked, BrainCircuit, ExternalLink } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Target, TrendingUp, CheckCircle2, AlertCircle, BookOpen, Sparkles, BookMarked, BrainCircuit, ExternalLink } from 'lucide-react';
+import api from '../utils/api';
 import './SkillGap.css';
 
-const mockCurrentSkills = [
-  { name: 'JavaScript', level: 85, category: 'Frontend' },
-  { name: 'React.js', level: 80, category: 'Frontend' },
-  { name: 'Node.js', level: 75, category: 'Backend' },
-  { name: 'Java', level: 85, category: 'Backend' },
-  { name: 'Python', level: 70, category: 'Data/ML' },
-  { name: 'MongoDB', level: 65, category: 'Database' },
-  { name: 'Git', level: 90, category: 'Tools' },
-];
-
-const mockTargetRoles = [
-  {
-    id: 'sde',
-    title: 'Software Development Engineer',
-    companyLevel: 'Top Tier (FAANG/MAMAA)',
-    match: 78,
-    requiredSkills: [
-      { name: 'Data Structures & Alg (DSA)', reqLevel: 95, currentLevel: 75, category: 'Core' },
-      { name: 'System Design', reqLevel: 80, currentLevel: 40, category: 'Core' },
-      { name: 'Java/C++', reqLevel: 85, currentLevel: 85, category: 'Language' },
-      { name: 'React.js', reqLevel: 70, currentLevel: 80, category: 'Frontend' },
-      { name: 'Node.js/Spring Boot', reqLevel: 80, currentLevel: 75, category: 'Backend' },
-      { name: 'AWS/Cloud', reqLevel: 60, currentLevel: 30, category: 'Tools' },
-    ],
-    recommendedCourses: [
-      { title: 'Grokking the System Design Interview', platform: 'Educative', type: 'Course', tags: ['Backend'] },
-      { title: 'AWS Certified Developer Associate', platform: 'Coursera', type: 'Certification', tags: ['Cloud'] },
-    ]
-  },
-  {
-    id: 'data',
-    title: 'Data Scientist / ML Engineer',
-    companyLevel: 'Tier 1 Startups',
-    match: 55,
-    requiredSkills: [
-      { name: 'Python', reqLevel: 90, currentLevel: 70, category: 'Language' },
-      { name: 'Machine Learning algorithms', reqLevel: 85, currentLevel: 30, category: 'Core' },
-      { name: 'SQL & Data Wrangling', reqLevel: 80, currentLevel: 50, category: 'Data' },
-      { name: 'Mathematics/Statistics', reqLevel: 80, currentLevel: 60, category: 'Core' },
-      { name: 'TensorFlow/PyTorch', reqLevel: 70, currentLevel: 10, category: 'Tools' },
-    ],
-    recommendedCourses: [
-      { title: 'Deep Learning Specialization', platform: 'Coursera (Andrew Ng)', type: 'Course', tags: ['ML', 'Neural Nets'] },
-      { title: 'Kaggle Machine Learning Competitions', platform: 'Kaggle', type: 'Practice', tags: ['Hands-on'] },
-    ]
-  }
-];
-
 export default function SkillGap() {
-  const [selectedRole, setSelectedRole] = useState(mockTargetRoles[0]);
+  const [currentSkills, setCurrentSkills] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchSkillGap = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get('/profile/skill-gap');
+        setCurrentSkills(Array.isArray(res.data?.currentSkills) ? res.data.currentSkills : []);
+        setRoles(Array.isArray(res.data?.roles) ? res.data.roles : []);
+        setSelectedRole((prev) => prev || (Array.isArray(res.data?.roles) ? res.data.roles[0] : null));
+        setError('');
+      } catch (err) {
+        setError(err.response?.data?.msg || 'Failed to load skill-gap analysis.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSkillGap();
+  }, []);
 
   const handleRoleSelect = (roleId) => {
-    const role = mockTargetRoles.find(r => r.id === roleId);
+    const role = roles.find(r => r.id === roleId);
     if (role) setSelectedRole(role);
   };
 
@@ -67,6 +43,18 @@ export default function SkillGap() {
 
   return (
     <div className="sg-container animate-fade-in stagger-1">
+      {loading && (
+        <div className="panel glass-panel mb-6">
+          Loading live skill-gap analysis...
+        </div>
+      )}
+
+      {error && (
+        <div className="panel glass-panel mb-6" style={{ color: 'var(--error)' }}>
+          {error}
+        </div>
+      )}
+
       <div className="sg-header">
         <div>
           <h1 className="sg-heading">Skill Gap <span className="gradient-text">Analysis</span></h1>
@@ -81,10 +69,10 @@ export default function SkillGap() {
           <div className="panel glass-panel sg-role-panel mb-6 animate-fade-in stagger-2">
             <h3 className="panel-title mb-4"><Target size={18} /> Target Roles</h3>
             <div className="role-options">
-              {mockTargetRoles.map(role => (
+              {roles.map(role => (
                 <button 
                   key={role.id}
-                  className={`role-select-btn ${selectedRole.id === role.id ? 'active' : ''}`}
+                  className={`role-select-btn ${selectedRole?.id === role.id ? 'active' : ''}`}
                   onClick={() => handleRoleSelect(role.id)}
                 >
                   <div className="role-btn-info">
@@ -108,7 +96,12 @@ export default function SkillGap() {
               <h3 className="panel-title"><Sparkles size={18} color="var(--primary)" /> AI Insights</h3>
             </div>
             <div className="insight-box">
-              <p>Your <strong>Frontend</strong> and <strong>Backend (Core)</strong> skills form a strong foundation for SDE roles. However, to pass top-tier company rounds, your primary gap is in <strong>System Design</strong> and <strong>Cloud Tooling (AWS)</strong>.</p>
+              <p>{selectedRole?.insight || 'Live skill-gap analysis will appear here once your profile is loaded.'}</p>
+              {currentSkills.length > 0 && (
+                <p className="mt-4">
+                  Current strengths: <strong>{currentSkills.slice(0, 4).map((skill) => skill.name).join(', ')}</strong>
+                </p>
+              )}
               
               <div className="insight-recommendation mt-4">
                 <BrainCircuit size={16} /> Focus next 3 weeks entirely on architectural patterns and scalability concepts.

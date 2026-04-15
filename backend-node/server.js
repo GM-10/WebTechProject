@@ -88,9 +88,11 @@ async function startServer() {
   }
 
   try {
+    console.log('Attempting to connect to MongoDB with URI:', MONGO_URI.split('@')[0] + '@***');
     await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
     });
     console.log('MongoDB connected successfully');
 

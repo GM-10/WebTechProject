@@ -23,15 +23,17 @@ export default function Dashboard() {
   const [upcomingInterviews, setUpcomingInterviews] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [studentProfile, setStudentProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, appsRes, jobsRes] = await Promise.all([
+        const [statsRes, appsRes, jobsRes, profileRes] = await Promise.all([
           api.get('/dashboard/stats'),
           api.get('/applications'), // Still need this for interview list
-          api.get('/jobs')
+          api.get('/jobs'),
+          api.get('/profile/me').catch(() => ({ data: null }))
         ]);
         
         // Backend now returns pre-formatted stats
@@ -39,19 +41,30 @@ export default function Dashboard() {
         const activity = statsRes.data.recentActivity || [];
         const apps = Array.isArray(appsRes.data) ? appsRes.data : [];
         const jobs = Array.isArray(jobsRes.data) ? jobsRes.data : [];
+        const cdcProfile = profileRes?.data?.cdcProfile || null;
         
+        setStudentProfile(cdcProfile);
         setRecentActivity(activity);
 
-        // Formatting stats with icons
-        const iconMap = isCDC ? 
-          [GraduationCap, TrendingUp, Briefcase, Award] : 
-          [Briefcase, Award, Calendar, TrendingUp];
+        const iconLookup = isCDC
+          ? {
+              'Total Students': GraduationCap,
+              'Placed Students': Briefcase,
+              'Total Offers': Award,
+              'Active Companies': TrendingUp
+            }
+          : {
+              'Applications': Briefcase,
+              'Offers': Award,
+              'Interviews': Calendar,
+              'Readiness': TrendingUp
+            };
         
         const colorMap = ['var(--primary)', 'var(--success)', 'var(--accent)', 'var(--secondary)'];
 
         setStats(backendStats.map((s, idx) => ({
           ...s,
-          icon: iconMap[idx] || Briefcase,
+          icon: iconLookup[s.label] || Briefcase,
           color: colorMap[idx] || 'var(--primary)'
         })));
 
@@ -86,6 +99,13 @@ export default function Dashboard() {
     fetchData();
   }, [isCDC]);
 
+  const getStatValue = (label) => Number(stats.find((item) => item.label === label)?.value || 0);
+  const totalStudents = getStatValue('Total Students');
+  const placedStudents = getStatValue('Placed Students');
+  const activeCompanies = getStatValue('Active Companies');
+  const readinessScore = Number(studentProfile?.readinessScore || studentProfile?.atsScore || 85);
+  const placementPercent = totalStudents > 0 ? Math.round((placedStudents / totalStudents) * 100) : 0;
+
   if (loading) {
     return (
       <div className="flex-center" style={{ height: '80vh' }}>
@@ -104,7 +124,7 @@ export default function Dashboard() {
           </h1>
           <p className="banner-subtitle">
             {isCDC 
-              ? `Monitoring ${stats[0]?.value || '...'} students across ${stats[2]?.value || '...'} active drives.`
+              ? `Monitoring ${totalStudents || '...'} students across ${activeCompanies || '...'} active drives.`
               : `Your placement journey is on track. You have ${upcomingInterviews.length} upcoming interviews this week.`
             }
           </p>
@@ -123,8 +143,8 @@ export default function Dashboard() {
           <div className="skill-circle">
             <svg viewBox="0 0 36 36" className="circular-chart">
               <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path className="circle" strokeDasharray={`${isCDC ? stats[1]?.value : 85}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <text x="18" y="20.35" className="percentage">{isCDC ? stats[1]?.value : 85}%</text>
+              <path className="circle" strokeDasharray={`${isCDC ? placementPercent : readinessScore}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <text x="18" y="20.35" className="percentage">{isCDC ? placementPercent : readinessScore}%</text>
             </svg>
             <span className="skill-label">{isCDC ? 'Placement %' : 'Readiness'}</span>
           </div>

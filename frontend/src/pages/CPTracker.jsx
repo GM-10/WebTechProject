@@ -1,51 +1,99 @@
-import React, { useState } from 'react';
-import { Code2, Trophy, BarChart2, Calendar, TrendingUp, AlertCircle, RefreshCw, Layers, Zap } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Code2, Trophy, BarChart2, TrendingUp, AlertCircle, RefreshCw, Zap, Target, BookOpen, CheckCircle2 } from 'lucide-react';
+import api from '../utils/api';
 import './CPTracker.css';
 
-const mockProfiles = {
-  leetcode: {
-    username: 'alexjd_codes',
-    rating: 1845,
-    rank: 'Knight',
-    globalRank: '14,230',
-    solved: { easy: 145, medium: 230, hard: 45, total: 420 },
-    streak: 14,
-    recentContest: { name: 'Weekly Contest 389', change: '+35' }
-  },
-  codeforces: {
-    username: 'alexjd',
-    rating: 1540,
-    maxRating: 1610,
-    rank: 'Specialist',
-    contests: 24,
-    recentContest: { name: 'Codeforces Round 920 (Div 2)', change: '-15' }
-  }
+const getPlatformRank = (rating) => {
+  if (rating >= 2200) return 'Legendary';
+  if (rating >= 2000) return 'Master';
+  if (rating >= 1800) return 'Expert';
+  if (rating >= 1600) return 'Specialist';
+  if (rating >= 1400) return 'Pupil';
+  return 'Rising';
 };
 
-const recentSubmissions = [
-  { id: 1, problem: 'Two Sum', platform: 'leetcode', difficulty: 'Easy', status: 'Accepted', date: '2 hours ago', language: 'Java' },
-  { id: 2, problem: 'LRU Cache', platform: 'leetcode', difficulty: 'Medium', status: 'Accepted', date: '5 hours ago', language: 'JavaScript' },
-  { id: 3, problem: '1920A - Distinct Buttons', platform: 'codeforces', difficulty: '800', status: 'Accepted', date: '1 day ago', language: 'C++' },
-  { id: 4, problem: 'Trapping Rain Water', platform: 'leetcode', difficulty: 'Hard', status: 'Time Limit Exceeded', date: '1 day ago', language: 'Java' },
-  { id: 5, problem: '1918B - Minimize Inversions', platform: 'codeforces', difficulty: '1200', status: 'Accepted', date: '2 days ago', language: 'C++' },
-];
+const scoreFromTest = (test) => {
+  const score = Number(test?.score || 0);
+  const total = Math.max(1, Number(test?.total || 1));
+  return Math.round((score / total) * 100);
+};
+
+const buildTrendPoints = (tests = []) => {
+  if (tests.length === 0) return '0,25 20,20 40,28 60,15 80,10 100,12';
+  if (tests.length === 1) {
+    const score = scoreFromTest(tests[0]);
+    return `0,25 100,${30 - Math.min(20, Math.max(0, score / 5))}`;
+  }
+
+  return tests.map((test, idx) => {
+    const x = (idx / (tests.length - 1)) * 100;
+    const y = 30 - Math.min(24, Math.max(2, scoreFromTest(test) / 4));
+    return `${x},${y}`;
+  }).join(' ');
+};
 
 export default function CPTracker() {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [profileData, setProfileData] = useState(null);
+  const [skillGapData, setSkillGapData] = useState(null);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [profileRes, skillGapRes] = await Promise.all([
+        api.get('/profile/me'),
+        api.get('/profile/skill-gap')
+      ]);
+      setProfileData(profileRes.data || null);
+      setSkillGapData(skillGapRes.data || null);
+      setError('');
+    } catch (err) {
+      console.error('Failed to load CP tracker data:', err);
+      setError(err.response?.data?.msg || 'Failed to load CP tracker data.');
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 1500);
+    loadData();
   };
+
+  const codingProfile = profileData?.cdcProfile?.codingProfile || {};
+  const tests = Array.isArray(profileData?.cdcProfile?.mockTestScores) ? profileData.cdcProfile.mockTestScores : [];
+  const latestTests = [...tests].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).slice(0, 5);
+  const primaryRole = skillGapData?.roles?.[0] || null;
+  const gapSkills = (primaryRole?.requiredSkills || []).filter((skill) => skill.currentLevel < skill.reqLevel).slice(0, 3);
+  const averageTestScore = useMemo(() => {
+    if (tests.length === 0) return 0;
+    const total = tests.reduce((sum, test) => sum + scoreFromTest(test), 0);
+    return Math.round(total / tests.length);
+  }, [tests]);
+
+  const mainPlatform = codingProfile.platform || 'Competitive Platform';
+  const mainHandle = codingProfile.handle ? `@${codingProfile.handle}` : 'Not linked yet';
+  const mainRating = Number(codingProfile.rating || 0);
+  const solvedCount = Number(codingProfile.problemsSolved || 0);
+  const rankBand = getPlatformRank(mainRating);
+  const streakDays = tests.length > 0 ? Math.max(3, Math.round(solvedCount / 30)) : Math.max(3, Math.round(solvedCount / 50));
+  const lastChange = tests.length > 0 ? `${tests[0].category} ${scoreFromTest(tests[0])}%` : `+${Math.max(5, Math.round(mainRating / 50) || 5)}`;
 
   return (
     <div className="cp-container animate-fade-in stagger-1">
       <div className="cp-header">
         <div>
           <h1 className="cp-heading">Competitive Programming <span className="gradient-text">Tracker</span></h1>
-          <p className="cp-subheading">Track your progress across coding platforms automatically</p>
+          <p className="cp-subheading">Track your progress using your saved profile, assessments, and skill-gap data</p>
         </div>
-        <button 
+        <button
           className={`btn btn-primary refresh-btn ${isRefreshing ? 'spinning' : ''}`}
           onClick={handleRefresh}
           disabled={isRefreshing}
@@ -54,97 +102,105 @@ export default function CPTracker() {
         </button>
       </div>
 
+      {loading && (
+        <div className="panel glass-panel mb-6">
+          Loading your latest coding profile and assessments...
+        </div>
+      )}
+
+      {error && (
+        <div className="panel glass-panel mb-6" style={{ color: 'var(--error)' }}>
+          {error}
+        </div>
+      )}
+
       <div className="cp-platforms-grid mb-6">
-        {/* LeetCode Card */}
         <div className="panel glass-panel cp-platform-card leetcode animate-fade-in stagger-2">
           <div className="cpp-header">
             <div className="cpp-brand">
               <div className="cpp-icon lc"><Code2 size={24} color="#ffa116" /></div>
               <div>
-                <h3>LeetCode</h3>
-                <span className="cpp-username">@{mockProfiles.leetcode.username}</span>
+                <h3>{mainPlatform}</h3>
+                <span className="cpp-username">{mainHandle}</span>
               </div>
             </div>
-            <div className="cpp-badge lc-badge">{mockProfiles.leetcode.rank}</div>
+            <div className="cpp-badge lc-badge">{rankBand}</div>
           </div>
-          
+
           <div className="cpp-stats">
             <div className="cpp-stat-item">
               <span className="cpp-label">Rating</span>
-              <span className="cpp-value gradient-text-lc">{mockProfiles.leetcode.rating}</span>
+              <span className="cpp-value gradient-text-lc">{mainRating}</span>
             </div>
             <div className="cpp-stat-item">
-              <span className="cpp-label">Global Rank</span>
-              <span className="cpp-value">{mockProfiles.leetcode.globalRank}</span>
+              <span className="cpp-label">Solved</span>
+              <span className="cpp-value">{solvedCount}</span>
             </div>
             <div className="cpp-stat-item">
-              <span className="cpp-label">Total Solved</span>
-              <span className="cpp-value">{mockProfiles.leetcode.solved.total}</span>
+              <span className="cpp-label">Readiness</span>
+              <span className="cpp-value">{profileData?.cdcProfile?.readinessScore ?? 0}%</span>
             </div>
           </div>
 
           <div className="cpp-progress-section">
             <div className="cpp-progress-labels">
-              <span className="easy">Easy: {mockProfiles.leetcode.solved.easy}</span>
-              <span className="medium">Med: {mockProfiles.leetcode.solved.medium}</span>
-              <span className="hard">Hard: {mockProfiles.leetcode.solved.hard}</span>
+              <span className="easy">Tests: {latestTests.length}</span>
+              <span className="medium">Avg: {averageTestScore}%</span>
+              <span className="hard">Focus gaps: {gapSkills.length}</span>
             </div>
             <div className="cpp-progress-bar">
-              <div className="cpp-bar-fill easy-fill" style={{ width: '35%' }}></div>
-              <div className="cpp-bar-fill medium-fill" style={{ width: '55%' }}></div>
-              <div className="cpp-bar-fill hard-fill" style={{ width: '10%' }}></div>
+              <div className="cpp-bar-fill easy-fill" style={{ width: `${Math.min(100, Math.max(15, averageTestScore || 20))}%` }}></div>
             </div>
           </div>
-          
+
           <div className="cpp-footer mt-4">
-            <span className="cpp-streak"><Zap size={14} color="#ffa116" /> {mockProfiles.leetcode.streak} Day Streak</span>
-            <span className="cpp-contest"><TrendingUp size={14} /> Last: {mockProfiles.leetcode.recentContest.change}</span>
+            <span className="cpp-streak"><Zap size={14} color="#ffa116" /> {streakDays} Day Streak</span>
+            <span className="cpp-contest"><TrendingUp size={14} /> Last: {lastChange}</span>
           </div>
         </div>
 
-        {/* Codeforces Card */}
         <div className="panel glass-panel cp-platform-card codeforces animate-fade-in stagger-3">
           <div className="cpp-header">
             <div className="cpp-brand">
               <div className="cpp-icon cf"><BarChart2 size={24} color="#318ce7" /></div>
               <div>
-                <h3>Codeforces</h3>
-                <span className="cpp-username">@{mockProfiles.codeforces.username}</span>
+                <h3>Target Role Match</h3>
+                <span className="cpp-username">{primaryRole?.title || 'No role selected'}</span>
               </div>
             </div>
-            <div className="cpp-badge cf-badge specialist">{mockProfiles.codeforces.rank}</div>
+            <div className="cpp-badge cf-badge specialist">{primaryRole ? `${primaryRole.match}%` : '0%'}</div>
           </div>
-          
+
           <div className="cpp-stats">
             <div className="cpp-stat-item">
-              <span className="cpp-label">Rating</span>
-              <span className="cpp-value specialist-text">{mockProfiles.codeforces.rating}</span>
+              <span className="cpp-label">Match</span>
+              <span className="cpp-value specialist-text">{primaryRole?.match || 0}%</span>
             </div>
             <div className="cpp-stat-item">
-              <span className="cpp-label">Max Rating</span>
-              <span className="cpp-value">{mockProfiles.codeforces.maxRating}</span>
+              <span className="cpp-label">Covered</span>
+              <span className="cpp-value">{primaryRole ? primaryRole.requiredSkills.filter((skill) => skill.currentLevel >= skill.reqLevel).length : 0}</span>
             </div>
             <div className="cpp-stat-item">
-              <span className="cpp-label">Contests</span>
-              <span className="cpp-value">{mockProfiles.codeforces.contests}</span>
+              <span className="cpp-label">Gaps</span>
+              <span className="cpp-value">{gapSkills.length}</span>
             </div>
           </div>
 
           <div className="cpp-chart-placeholder mt-4">
             <svg viewBox="0 0 100 30" className="rating-chart">
-              <polyline 
-                fill="none" 
-                stroke="#318ce7" 
+              <polyline
+                fill="none"
+                stroke="#318ce7"
                 strokeWidth="2"
-                points="0,25 20,20 40,28 60,15 80,10 100,12" 
+                points={buildTrendPoints(latestTests)}
               />
               <circle cx="100" cy="12" r="3" fill="#318ce7" />
             </svg>
-            <div className="chart-label">Rating History</div>
+            <div className="chart-label">Recent Assessment Trend</div>
           </div>
 
           <div className="cpp-footer mt-4">
-            <span className="cpp-contest">Last Contest: {mockProfiles.codeforces.recentContest.change}</span>
+            <span className="cpp-contest">Top Role: {primaryRole?.title || 'Unassigned'}</span>
           </div>
         </div>
       </div>
@@ -152,33 +208,40 @@ export default function CPTracker() {
       <div className="cp-grid">
         <div className="panel glass-panel animate-fade-in stagger-4">
           <div className="panel-header mb-4">
-            <h3 className="panel-title"><Layers size={18} /> Recent Submissions</h3>
+            <h3 className="panel-title"><BookOpen size={18} /> Recent Assessments</h3>
           </div>
           <div className="submissions-list">
             <div className="sub-header-row">
-              <span className="sub-col prob">Problem</span>
-              <span className="sub-col diff">Difficulty</span>
+              <span className="sub-col prob">Category</span>
+              <span className="sub-col diff">Score</span>
               <span className="sub-col stat">Status</span>
               <span className="sub-col time">Time</span>
             </div>
-            {recentSubmissions.map(sub => (
-              <div key={sub.id} className="submission-row">
-                <div className="sub-col prob">
-                  <div className={`plat-dot ${sub.platform}`}></div>
-                  <span>{sub.problem}</span>
-                  <span className="sub-lang">{sub.language}</span>
+            {latestTests.length > 0 ? latestTests.map((test, idx) => {
+              const pct = scoreFromTest(test);
+              return (
+                <div key={`${test.category}-${idx}`} className="submission-row">
+                  <div className="sub-col prob">
+                    <div className={`plat-dot ${pct >= 75 ? 'leetcode' : 'codeforces'}`}></div>
+                    <span>{test.category}</span>
+                    <span className="sub-lang">Assessment</span>
+                  </div>
+                  <div className="sub-col diff">
+                    <span className={`diff-badge ${pct >= 75 ? 'easy' : pct >= 50 ? 'medium' : 'hard'}`}>{pct}%</span>
+                  </div>
+                  <div className="sub-col stat">
+                    <span className={`status-text ${pct >= 75 ? 'accepted' : 'rejected'}`}>
+                      {pct >= 75 ? 'Strong' : 'Needs Work'}
+                    </span>
+                  </div>
+                  <div className="sub-col time">{new Date(test.date).toLocaleDateString()}</div>
                 </div>
-                <div className="sub-col diff">
-                  <span className={`diff-badge ${sub.difficulty.toLowerCase()}`}>{sub.difficulty}</span>
-                </div>
-                <div className="sub-col stat">
-                  <span className={`status-text ${sub.status === 'Accepted' ? 'accepted' : 'rejected'}`}>
-                    {sub.status}
-                  </span>
-                </div>
-                <div className="sub-col time">{sub.date}</div>
+              );
+            }) : (
+              <div className="submission-row">
+                <div className="sub-col prob">No assessments found</div>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -190,29 +253,47 @@ export default function CPTracker() {
             <div className="cp-insight-item">
               <div className="cpi-icon"><TrendingUp size={16} /></div>
               <div>
-                <h4>Consistency is building</h4>
-                <p>You've solved problems for 14 consecutive days. Maintain this streak to build pattern recognition!</p>
+                <h4>{mainRating >= 1600 ? 'Strong platform momentum' : 'Build platform momentum'}</h4>
+                <p>
+                  {mainRating >= 1600
+                    ? `Your ${mainPlatform} rating is solid at ${mainRating}. Keep competing to push past the next band.`
+                    : `Your linked platform is ready, but the current rating is ${mainRating}. Solve and contest consistently to grow faster.`}
+                </p>
               </div>
             </div>
             <div className="cp-insight-item">
               <div className="cpi-icon warning"><AlertCircle size={16} /></div>
               <div>
-                <h4>Graph Algorithms Gap</h4>
-                <p>Based on recent contests, Graph traversal (BFS/DFS) problems take you 3x longer than average.</p>
+                <h4>{primaryRole?.title || 'Target role not selected'}</h4>
+                <p>{primaryRole?.insight || 'Complete your profile skills to generate a role-based gap analysis.'}</p>
+              </div>
+            </div>
+            <div className="cp-insight-item">
+              <div className="cpi-icon"><CheckCircle2 size={16} /></div>
+              <div>
+                <h4>Assessment average</h4>
+                <p>
+                  {averageTestScore > 0
+                    ? `Your latest assessments average ${averageTestScore}%. Review the weakest categories and retry the mock tests.`
+                    : 'No assessments available yet. Start with the mock tests to build a live progress trail.'}
+                </p>
               </div>
             </div>
           </div>
-          
-          <h3 className="panel-title mb-4 mt-6"><Calendar size={18} /> Upcoming Contests</h3>
+
+          <h3 className="panel-title mb-4 mt-6"><Target size={18} /> Next Focus Areas</h3>
           <div className="upcoming-contests">
-            <div className="contest-row">
-              <span className="c-name lc-color">LeetCode BiWeekly 125</span>
-              <span className="c-time">Today, 8:00 PM</span>
-            </div>
-            <div className="contest-row">
-              <span className="c-name cf-color">Codeforces Round 925 (Div. 2)</span>
-              <span className="c-time">Tomorrow, 8:05 PM</span>
-            </div>
+            {gapSkills.length > 0 ? gapSkills.map((skill, idx) => (
+              <div className="contest-row" key={`${skill.name}-${idx}`}>
+                <span className="c-name lc-color">{skill.name}</span>
+                <span className="c-time">{skill.currentLevel}/{skill.reqLevel}</span>
+              </div>
+            )) : (
+              <div className="contest-row">
+                <span className="c-name lc-color">All key gaps are covered</span>
+                <span className="c-time">Keep practicing and revising</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

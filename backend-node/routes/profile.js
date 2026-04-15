@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Profile = require('../models/Profile');
+const CDCStudentProfile = require('../models/CDCStudentProfile');
 const User = require('../models/User');
 const multer = require('multer');
 const pdfParseModule = require('pdf-parse');
@@ -324,9 +325,16 @@ async function runExternalAtsAnalysis({ targetRole, profile, resumeText }) {
 // @access  Private
 router.get('/me', auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate('user', ['name', 'email', 'avatar']);
+    const [profile, cdcProfile] = await Promise.all([
+      Profile.findOne({ user: req.user.id }).populate('user', ['name', 'email', 'avatar']),
+      CDCStudentProfile.findOne({ user: req.user.id }).lean()
+    ]);
+
     if (!profile) return res.status(400).json({ msg: 'There is no profile for this user' });
-    res.json(profile);
+    res.json({
+      ...profile.toObject(),
+      cdcProfile: cdcProfile || null
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

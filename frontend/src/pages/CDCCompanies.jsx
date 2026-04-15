@@ -148,7 +148,7 @@ function CompanyModal({ onClose, onSave, existingCompany }) {
 
     try {
       setLoading(true);
-      await api.post('/api/jobs', form);
+      await api.post('/jobs', form);
       alert('Company/Drive created successfully!');
       onSave();
       onClose();
@@ -311,7 +311,7 @@ function CompanyDetailModal({ company, onClose }) {
   useEffect(() => {
     const fetchEligibility = async () => {
       try {
-        const res = await api.get(`/api/jobs/${company._id}/eligible-students`);
+        const res = await api.get(`/jobs/${company._id}/eligible-students`);
         setEligible(res.data.eligible);
         setIneligible(res.data.ineligible || []);
       } catch (err) {
@@ -457,7 +457,7 @@ export default function CDCCompanies() {
   const fetchCompanies = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await api.get('/api/jobs/cdc/all');
+      const res = await api.get('/jobs/cdc/all');
       setCompanies(res.data);
       setFiltered(res.data);
     } catch (err) {

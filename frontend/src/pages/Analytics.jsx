@@ -13,12 +13,14 @@ import {
   AlertCircle,
   Loader2
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import './Analytics.css';
 
 const TOKEN_INVALID_ERROR = 'Session expired or invalid token. Please login again from Landing page.';
 
 export default function Analytics() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -274,14 +276,18 @@ export default function Analytics() {
             <h3 className="panel-title"><AlertCircle size={18} color="var(--error)" /> Critical Actions</h3>
           </div>
           <div className="admin-alerts">
-            <div className="admin-alert error">
-              <p>Verify outstanding student profiles for tomorrow's recruitment drive.</p>
-              <button className="btn-text">Review Now</button>
-            </div>
-            <div className="admin-alert warning">
-              <p>Upcoming job posting deadline for Amazon approaching in 24 hours.</p>
-              <button className="btn-text">Notify Students</button>
-            </div>
+            {(data?.recentDrives || []).slice(0, 2).map((drive, idx) => (
+              <div key={`${drive.company}-${idx}`} className={`admin-alert ${drive.status === 'Confirmed' ? 'warning' : 'error'}`}>
+                <p>{drive.company} has {drive.applicants} applicant{drive.applicants === 1 ? '' : 's'} and is marked {drive.status.toLowerCase()}.</p>
+                <button className="btn-text" onClick={() => navigate('/app/cdc-companies')}>Review Drive</button>
+              </div>
+            ))}
+            {(data?.recentDrives || []).length === 0 && (
+              <div className="admin-alert warning">
+                <p>No recent recruitment activity recorded yet.</p>
+                <button className="btn-text" onClick={() => navigate('/app/cdc-companies')}>Open Drives</button>
+              </div>
+            )}
           </div>
         </div>
       </div>
