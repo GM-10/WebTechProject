@@ -4,8 +4,8 @@ const auth = require('../middleware/auth');
 const { Question, TestResult } = require('../models/Test');
 
 // GET /api/tests/questions/:category
-// Returns up to 10 questions for the given category.
-// Optional query param: ?difficulty=easy|medium|hard  (omit for all difficulties)
+// Returns exactly 25 random questions for the given category.
+// Optional query param: ?difficulty=easy|medium|hard
 router.get('/questions/:category', auth, async (req, res) => {
   try {
     const { category } = req.params;
@@ -16,18 +16,14 @@ router.get('/questions/:category', auth, async (req, res) => {
       filter.difficulty = difficulty;
     }
 
-    // Fetch a balanced set: try to get 10 questions mixing difficulties
-    let questions;
-    if (!difficulty) {
-      // Return a mix: 3 easy, 4 medium, 3 hard (or whatever is available)
-      const easy   = await Question.find({ category, difficulty: 'easy'   }).limit(3).lean();
-      const medium = await Question.find({ category, difficulty: 'medium' }).limit(4).lean();
-      const hard   = await Question.find({ category, difficulty: 'hard'   }).limit(3).lean();
-      questions = [...easy, ...medium, ...hard];
-      // Shuffle
-      questions = questions.sort(() => Math.random() - 0.5);
-    } else {
-      questions = await Question.find(filter).limit(10).lean();
+    // Use aggregate $sample for high-performance randomization
+    const questions = await Question.aggregate([
+      { $match: filter },
+      { $sample: { size: 25 } }
+    ]);
+
+    if (questions.length === 0) {
+      return res.status(404).json({ msg: 'No questions found for this category.' });
     }
 
     res.json(questions);
@@ -37,10 +33,21 @@ router.get('/questions/:category', auth, async (req, res) => {
   }
 });
 
-// POST /api/tests/submit — Save a test result
+// POST /api/tests/submit — Save a test result with detailed analytics
 router.post('/submit', auth, async (req, res) => {
   try {
-    const { category, score, totalQuestions, duration, correctCount, difficulty } = req.body;
+    const { 
+      category, 
+      score, 
+      totalQuestions, 
+      duration, 
+      correctCount, 
+      difficulty,
+      totalPoints,
+      maxPoints,
+      questionDetails 
+    } = req.body;
+
     const result = new TestResult({
       student: req.user.id,
       category,
@@ -48,8 +55,12 @@ router.post('/submit', auth, async (req, res) => {
       totalQuestions,
       duration,
       correctCount,
-      difficulty: difficulty || 'mixed'
+      difficulty: difficulty || 'mixed',
+      totalPoints: totalPoints || 0,
+      maxPoints: maxPoints || 0,
+      questionDetails: questionDetails || []
     });
+
     await result.save();
     res.json(result);
   } catch (err) {

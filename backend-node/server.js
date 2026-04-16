@@ -88,13 +88,25 @@ async function startServer() {
   }
 
   try {
-    console.log('Attempting to connect to MongoDB with URI:', MONGO_URI.split('@')[0] + '@***');
-    await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 30000,
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-    });
-    console.log('MongoDB connected successfully');
+    try {
+      console.log('Attempting to connect to MongoDB with URI:', MONGO_URI.split('@')[0] + '@***');
+      await mongoose.connect(MONGO_URI, {
+        serverSelectionTimeoutMS: 10000, // Faster timeout for quicker fallback
+        connectTimeoutMS: 10000,
+      });
+      console.log('MongoDB connected successfully');
+    } catch (primaryErr) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Primary MongoDB connection failed. Initializing MongoMemoryServer for development fallback...');
+        const { MongoMemoryServer } = require('mongodb-memory-server');
+        const mongod = await MongoMemoryServer.create();
+        const uri = mongod.getUri();
+        await mongoose.connect(uri);
+        console.log('Connected to In-Memory MongoDB at:', uri);
+      } else {
+        throw primaryErr;
+      }
+    }
 
     server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
@@ -120,11 +132,11 @@ async function startServer() {
       }
 
       const questionsCount = await Question.countDocuments();
-      if (questionsCount === 0) {
-        console.log('No questions found — running question seed...');
+      if (questionsCount < 170) {
+        console.log(`Question bank expansion needed (${questionsCount}/180) — running seed...`);
         const { seedQuestions } = require('./seedQuestions');
         await seedQuestions();
-        console.log('Question seed complete!');
+        console.log('Domain expansion seed complete!');
       }
     } catch (seedErr) {
       console.warn('Auto-seed warning:', seedErr.message);

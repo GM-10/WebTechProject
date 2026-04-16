@@ -4,7 +4,7 @@ const QuestionSchema = new mongoose.Schema({
   text:          { type: String, required: true },
   options:       [{ type: String, required: true }],
   correctAnswer: { type: Number, required: true },
-  category:      { type: String, required: true, enum: ['dsa', 'sysdesign', 'csCore', 'aptitude'] },
+  category:      { type: String, required: true, enum: ['dsa', 'sysdesign', 'csCore', 'aptitude', 'logicalReasoning', 'verbalAbility'] },
   difficulty:    { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
   efficientTime: { type: Number }, // benchmark seconds: easy=45, medium=90, hard=150
   tags:          [String],
