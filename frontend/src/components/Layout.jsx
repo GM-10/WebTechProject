@@ -16,9 +16,12 @@ import {
   ClipboardList,
   GraduationCap,
   Building2,
-  MessageSquare
+  MessageSquare,
+  Sun,
+  Moon
 } from 'lucide-react';
 import Notifications from './Notifications';
+import { useTheme } from '../hooks/useTheme';
 import './Layout.css';
 
 
@@ -43,6 +46,7 @@ export default function Layout() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem('user') || '{}') || {};
+  const { theme, toggleTheme } = useTheme();
 
 
 
@@ -66,7 +70,7 @@ export default function Layout() {
       {/* Sidebar */}
       <aside className={`sidebar glass-panel ${isMobileOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <div className="logo-box">
+          <div className="logo-box" onClick={() => navigate('/app/dashboard')} style={{ cursor: 'pointer' }}>
             <span className="logo-icon glass-panel">
               <BrainCircuit size={24} color="var(--primary)" />
             </span>
@@ -83,8 +87,8 @@ export default function Layout() {
                 if (['My Profile', 'Skill Gap', 'CP Tracker', 'ATS Resume', 'Mock Tests'].includes(item.name)) return null;
                 if (item.divider && item.label === 'TOOLS') return null;
               } else {
-                // Hide Analytics from Students
-                if (item.path === '/app/analytics') return null;
+                // Hide Admin routes from Students
+                if (['/app/analytics', '/app/cdc-students', '/app/cdc-companies'].includes(item.path)) return null;
                 if (item.divider && item.label === 'ADMIN') return null;
               }
 
@@ -133,6 +137,9 @@ export default function Layout() {
           </div>
 
           <div className="header-right">
+            <button className="btn-icon mr-2" onClick={toggleTheme} title="Toggle Theme" style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
             <Notifications />
             <button className="btn-icon header-logout ml-2" onClick={handleLogout} title="Logout">
               <LogOut size={18} color="#f87171" />

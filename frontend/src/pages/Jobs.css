@@ -74,8 +74,8 @@
 .search-input {
   width: 100%;
   padding: 0.65rem 2.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-heavy);
   border-radius: 10px;
   color: var(--text-main);
   font-family: inherit;
@@ -108,14 +108,14 @@
 }
 
 .search-clear:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-border);
   color: var(--text-main);
 }
 
 .filter-tabs {
   display: flex;
   gap: 4px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--overlay-light);
   border-radius: 10px;
   padding: 4px;
 }
@@ -140,7 +140,7 @@
 
 .filter-tab.active {
   background: var(--primary);
-  color: white;
+  color: var(--text-main);
   box-shadow: 0 2px 8px rgba(129, 140, 248, 0.3);
 }
 
@@ -149,8 +149,8 @@
   align-items: center;
   gap: 6px;
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-heavy);
   border-radius: 10px;
   color: var(--text-muted);
   font-family: inherit;
@@ -201,8 +201,8 @@
 
 .filter-chip {
   padding: 0.4rem 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--overlay-heavy);
+  background: var(--overlay-light);
   border-radius: 20px;
   color: var(--text-muted);
   font-family: inherit;
@@ -235,7 +235,7 @@
 }
 
 .job-listing-card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--overlay-border);
 }
 
 .job-listing-card.expanded {
@@ -339,7 +339,7 @@
 .job-tag {
   font-size: 0.73rem;
   padding: 3px 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
   color: var(--text-muted);
   border-radius: 6px;
   font-weight: 500;
@@ -367,7 +367,7 @@
 
 .match-bg-path {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.05);
+  stroke: var(--overlay-medium);
   stroke-width: 3;
 }
 
@@ -383,7 +383,7 @@
 }
 
 .match-text {
-  fill: #fff;
+  fill: var(--text-main);
   font-family: inherit;
   font-size: 0.5rem;
   font-weight: 700;
@@ -398,8 +398,8 @@
 
 /* Save Button */
 .save-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-heavy);
   color: var(--text-muted);
   width: 38px;
   height: 38px;
@@ -546,8 +546,8 @@
 }
 
 .modal-close {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-heavy);
   color: var(--text-muted);
   width: 36px;
   height: 36px;
@@ -561,7 +561,7 @@
 
 .modal-close:hover {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-border);
 }
 
 .modal-body {
@@ -614,7 +614,7 @@
   font-size: 0.82rem;
   color: var(--text-muted);
   padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--overlay-light);
   border-radius: 8px;
   line-height: 1.5;
 }
@@ -628,7 +628,7 @@
 
 /* Border button utility */
 .border-btn {
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid var(--overlay-border) !important;
 }
 
 /* Responsive */

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Profile = require('../models/Profile');
+const mongoose = require('mongoose');
 
 // @route   POST api/auth/register
 // @desc    Register a new user
@@ -41,6 +42,9 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ msg: 'Database connection failed. Please check your Atlas IP Whitelist.' });
+    }
     let user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
 

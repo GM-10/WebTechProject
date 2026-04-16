@@ -94,14 +94,14 @@
   gap: 0.5rem;
   flex: 1;
   min-width: 250px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   transition: background 0.3s ease;
 }
 
 .cdc-search-wrap:focus-within {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-heavy);
 }
 
 .cdc-search-icon {
@@ -137,7 +137,7 @@
 
 .cdc-filter-select {
   appearance: none;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
   border: none;
   padding: 0.6rem 2rem 0.6rem 0.75rem;
   border-radius: 6px;
@@ -148,12 +148,12 @@
 }
 
 .cdc-filter-select:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-heavy);
 }
 
 .cdc-filter-select:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-border);
 }
 
 .cdc-select-arrow {
@@ -166,7 +166,7 @@
 .cdc-cgpa-input {
   width: 120px;
   padding: 0.6rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
   border: none;
   border-radius: 6px;
   color: var(--text-main);
@@ -175,7 +175,7 @@
 
 .cdc-cgpa-input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-heavy);
 }
 
 .cdc-cgpa-input::placeholder {
@@ -216,7 +216,7 @@
 }
 
 .cdc-table thead {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-medium);
 }
 
 .cdc-table th {
@@ -225,17 +225,17 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--overlay-heavy);
   white-space: nowrap;
 }
 
 .cdc-table tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--overlay-medium);
   transition: background 0.3s ease;
 }
 
 .cdc-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--overlay-light);
 }
 
 .cdc-table td {
@@ -336,7 +336,7 @@
 }
 
 .cdc-view-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-heavy);
 }
 
 /* Buttons */
@@ -371,11 +371,11 @@
 .btn-ghost {
   background: none;
   color: var(--text-main);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--overlay-border);
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
 }
 
 .btn-small {
@@ -404,8 +404,11 @@
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding: 0;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 .large-company-modal {
@@ -415,12 +418,12 @@
 .cdc-modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  sticky: top;
+  border-bottom: 1px solid var(--overlay-heavy);
   background: var(--bg-secondary);
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .cdc-modal-name {
@@ -444,12 +447,32 @@
 }
 
 .cdc-modal-close:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-heavy);
 }
 
 /* Form */
 .company-form {
   padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Custom Scrollbar */
+.company-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.company-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.company-form::-webkit-scrollbar-thumb {
+  background: var(--overlay-heavy);
+  border-radius: 4px;
+}
+
+.company-form::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
 
 .form-error {
@@ -493,8 +516,8 @@
 .company-form textarea {
   width: 100%;
   padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-heavy);
   border-radius: 6px;
   color: var(--text-main);
   font-size: 0.9rem;
@@ -505,7 +528,7 @@
 .company-form select:focus,
 .company-form textarea:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-heavy);
   border-color: var(--primary);
 }
 
@@ -622,7 +645,7 @@
   justify-content: flex-end;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--overlay-heavy);
 }
 
 /* Company Detail Modal */
@@ -639,7 +662,7 @@
 
 .detail-item {
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--overlay-light);
   border-radius: 6px;
 }
 
@@ -726,7 +749,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--overlay-light);
   border-radius: 6px;
 }
 

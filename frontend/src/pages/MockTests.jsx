@@ -32,12 +32,42 @@ export default function MockTests() {
   const [loading, setLoading] = useState(false);
   const [score, setScore] = useState(0);
   const [history, setHistory] = useState([]);
+  const [statsSummary, setStatsSummary] = useState({
+    avgScore: 0,
+    totalTests: 0,
+    categoryStats: {}
+  });
 
   React.useEffect(() => {
     const fetchHistory = async () => {
       try {
         const res = await api.get('/tests/history');
-        setHistory(res.data);
+        const historyData = res.data || [];
+        setHistory(historyData);
+        
+        // Calculate dynamic stats
+        if (historyData.length > 0) {
+          const total = historyData.length;
+          const avg = Math.round(historyData.reduce((acc, curr) => acc + curr.score, 0) / total);
+          
+          const catMap = {};
+          historyData.forEach(test => {
+            if (!catMap[test.category]) catMap[test.category] = { sum: 0, count: 0 };
+            catMap[test.category].sum += test.score;
+            catMap[test.category].count += 1;
+          });
+          
+          const categoryStats = {};
+          Object.keys(catMap).forEach(cat => {
+            categoryStats[cat] = Math.round(catMap[cat].sum / catMap[cat].count);
+          });
+          
+          setStatsSummary({
+            avgScore: avg,
+            totalTests: total,
+            categoryStats
+          });
+        }
       } catch (err) {
         console.error('History fetch error:', err);
       }
@@ -300,28 +330,30 @@ export default function MockTests() {
             
             <div className="perf-stats">
               <div className="perf-item">
-                <span className="perf-val">84%</span>
+                <span className="perf-val">{statsSummary.avgScore}%</span>
                 <span className="perf-lbl">Avg Score</span>
               </div>
               <div className="perf-item">
-                <span className="perf-val">12</span>
+                <span className="perf-val">{statsSummary.totalTests}</span>
                 <span className="perf-lbl">Tests Taken</span>
               </div>
             </div>
 
             <div className="perf-bars mt-4">
-              <div className="pb-row">
-                <div className="pb-info"><span>DSA</span><span>88%</span></div>
-                <div className="pb-track"><div className="pb-fill" style={{width: '88%', background: '#818cf8'}}></div></div>
-              </div>
-              <div className="pb-row">
-                <div className="pb-info"><span>CS Core</span><span>92%</span></div>
-                <div className="pb-track"><div className="pb-fill" style={{width: '92%', background: '#c084fc'}}></div></div>
-              </div>
-              <div className="pb-row">
-                <div className="pb-info"><span>System Design</span><span>65%</span></div>
-                <div className="pb-track"><div className="pb-fill" style={{width: '65%', background: '#f59e0b'}}></div></div>
-              </div>
+              {testCategories.map(cat => {
+                const score = statsSummary.categoryStats[cat.id] || 0;
+                return (
+                  <div className="pb-row" key={cat.id}>
+                    <div className="pb-info"><span>{cat.id.toUpperCase()}</span><span>{score}%</span></div>
+                    <div className="pb-track">
+                      <div 
+                        className="pb-fill" 
+                        style={{width: `${Math.max(5, score)}%`, background: cat.color}}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

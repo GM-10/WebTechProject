@@ -206,8 +206,8 @@
 }
 
 .edit-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-border);
   border-radius: 10px;
   padding: 0.6rem 0.9rem;
   color: var(--text-main);
@@ -226,7 +226,7 @@
 .edit-input-inline {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--overlay-border);
   padding: 2px 4px;
   color: var(--text-main);
   font-family: inherit;
@@ -240,8 +240,8 @@
 }
 
 .edit-textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-border);
   border-radius: 10px;
   padding: 0.75rem;
   color: var(--text-main);
@@ -303,7 +303,7 @@
 }
 
 .social-link:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-medium);
   color: var(--text-main);
 }
 
@@ -399,7 +399,7 @@
 
 /* Resume Upload */
 .resume-upload-zone {
-  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border: 2px dashed var(--overlay-border);
   border-radius: 14px;
   padding: 2rem;
   text-align: center;
@@ -525,7 +525,7 @@
 
 .skill-bar-track {
   height: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -589,12 +589,12 @@
   gap: 12px;
   padding: 0.75rem;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--overlay-light);
   transition: all 0.2s;
 }
 
 .achievement-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
   transform: translateX(4px);
 }
 
@@ -615,7 +615,7 @@
 
 /* Border button utility */
 .border-btn {
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid var(--overlay-border) !important;
 }
 
 /* Gradient border panel */

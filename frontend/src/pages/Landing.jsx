@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ShieldCheck, 
+import {
+  ShieldCheck,
   ArrowRight,
   BrainCircuit,
   Globe,
@@ -9,12 +9,16 @@ import {
   BarChart3,
   Award,
   Briefcase,
-  TrendingUp
+  TrendingUp,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 import './Landing.css';
 
 export default function Landing() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   React.useEffect(() => {
     document.body.classList.add('landing-page');
@@ -37,6 +41,9 @@ export default function Landing() {
           <h2 className="logo-text gradient-text">CampusPlace</h2>
         </div>
         <div className="nav-actions">
+          <button className="btn-ghost" onClick={toggleTheme} title="Toggle Theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem', borderRadius: '50%', cursor: 'pointer' }}>
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
           <span className="tab-btn active">The Platform</span>
           <button className="btn btn-primary" onClick={() => navigate('/login')}>Login Portal</button>
         </div>
@@ -56,16 +63,16 @@ export default function Landing() {
           <div className="hero-cta-group">
             <div className="platform-pillars">
               <div className="pillar">
-                 <div className="pillar-icon"><Briefcase size={18} /></div>
-                 <span><strong>Job Portal:</strong> 50+ Active hiring drives.</span>
+                <div className="pillar-icon"><Briefcase size={18} /></div>
+                <span><strong>Job Portal:</strong> 50+ Active hiring drives.</span>
               </div>
               <div className="pillar">
-                 <div className="pillar-icon"><Zap size={18} /></div>
-                 <span><strong>AI Powered:</strong> Skills and Resume analysis.</span>
+                <div className="pillar-icon"><Zap size={18} /></div>
+                <span><strong>AI Powered:</strong> Skills and Resume analysis.</span>
               </div>
               <div className="pillar">
-                 <div className="pillar-icon"><Globe size={18} /></div>
-                 <span><strong>CDC Command:</strong> Centralized data hub.</span>
+                <div className="pillar-icon"><Globe size={18} /></div>
+                <span><strong>CDC Command:</strong> Centralized data hub.</span>
               </div>
             </div>
             <button className="btn btn-primary hero-btn mt-6" onClick={() => navigate('/login')}>
@@ -81,9 +88,9 @@ export default function Landing() {
               <span>Real-time Analytics</span>
             </div>
             <div className="card-placeholder-bars">
-              <div className="ph-bar" style={{width: '60%'}}></div>
-              <div className="ph-bar" style={{width: '85%'}}></div>
-              <div className="ph-bar" style={{width: '45%'}}></div>
+              <div className="ph-bar" style={{ width: '60%' }}></div>
+              <div className="ph-bar" style={{ width: '85%' }}></div>
+              <div className="ph-bar" style={{ width: '45%' }}></div>
             </div>
           </div>
           <div className="visual-card glass-panel floating">
@@ -100,21 +107,21 @@ export default function Landing() {
       <section className="features-section mt-12">
         <div className="features-grid">
           <div className="feature-card glass-panel animate-fade-in stagger-4">
-            <div className="feature-icon" style={{backgroundColor: 'rgba(129, 140, 248, 0.1)', color: 'var(--primary)'}}>
+            <div className="feature-icon" style={{ backgroundColor: 'rgba(129, 140, 248, 0.1)', color: 'var(--primary)' }}>
               <ShieldCheck size={24} />
             </div>
             <h3>AI ATS Optimizer</h3>
             <p>Ensure your resume passes through corporate filters with keyword analysis and layout checks.</p>
           </div>
           <div className="feature-card glass-panel animate-fade-in stagger-4">
-            <div className="feature-icon" style={{backgroundColor: 'rgba(56, 189, 248, 0.1)', color: 'var(--accent)'}}>
+            <div className="feature-icon" style={{ backgroundColor: 'rgba(56, 189, 248, 0.1)', color: 'var(--accent)' }}>
               <Globe size={24} />
             </div>
             <h3>Job Hub</h3>
             <p>Centralized gateway for all on-campus opportunities from top-tier tech giants to agile startups.</p>
           </div>
           <div className="feature-card glass-panel animate-fade-in stagger-4">
-            <div className="feature-icon" style={{backgroundColor: 'rgba(192, 132, 252, 0.1)', color: 'var(--secondary)'}}>
+            <div className="feature-icon" style={{ backgroundColor: 'rgba(192, 132, 252, 0.1)', color: 'var(--secondary)' }}>
               <TrendingUp size={24} />
             </div>
             <h3>Skill Gap Map</h3>

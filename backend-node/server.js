@@ -82,49 +82,38 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/placement_ecosystem';
 
-async function startServer() {
-  if (!process.env.MONGO_URI) {
-    console.warn('MONGO_URI is not set. Using local MongoDB at mongodb://localhost:27017/placement_ecosystem.');
-  }
+/**
+ * Optimized Start Sequence:
+ * Start the server immediately so the frontend can "reach" it.
+ * Then connect to MongoDB in the background.
+ */
+const startServer = async () => {
+  // 1. Fire up the HTTP server first
+  server.listen(PORT, () => {
+    console.log(`🚀 API Server is LIVE on port ${PORT}`);
+    console.log('📡 Background: Attempting to connect to MongoDB...');
+  });
 
+  // 2. Background DB Connection
   try {
-    console.log('Attempting to connect to MongoDB with URI:', MONGO_URI.split('@')[0] + '@***');
-    await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 30000,
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/placement_ecosystem', {
+      serverSelectionTimeoutMS: 5000, 
     });
-    console.log('MongoDB connected successfully');
+    console.log('✅ MongoDB connected successfully');
 
-    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-    // Auto-seed on fresh DB (no CDC user exists yet)
-    try {
-      const User = require('./models/User');
-      const Job = require('./models/Job');
-      const cdcExists = await User.findOne({ role: 'cdc' });
-      if (!cdcExists) {
-        console.log('Fresh DB detected — running auto-seed...');
-        const { autoSeed } = require('./seedStudents');
-        await autoSeed();
-        console.log('Auto-seed complete!');
-      }
-
-      const jobsCount = await Job.countDocuments();
-      if (jobsCount === 0) {
-        console.log('No companies found — running company seed...');
-        const { autoSeedCompanies } = require('./seedCompanies');
-        await autoSeedCompanies();
-        console.log('Company seed complete!');
-      }
-    } catch (seedErr) {
-      console.warn('Auto-seed warning:', seedErr.message);
+    // Quick Seed Check
+    const User = require('./models/User');
+    const cdcExists = await User.findOne({ role: 'cdc' });
+    if (!cdcExists) {
+      console.log('🌱 Fresh DB: Running auto-seed...');
+      const { autoSeed } = require('./seedStudents');
+      await autoSeed();
     }
   } catch (err) {
-    console.error('MongoDB connection failed:', err.message);
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', err.message);
+    console.error('👉 ACTION REQUIRED: Ensure your current IP is whitelisted in MongoDB Atlas.');
   }
-}
+};
 
 startServer();
 

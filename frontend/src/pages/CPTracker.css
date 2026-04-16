@@ -158,7 +158,7 @@
   height: 8px;
   border-radius: 4px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
 }
 
 .cpp-bar-fill {
@@ -191,7 +191,7 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--overlay-medium);
   font-size: 0.85rem;
 }
 
@@ -228,34 +228,34 @@
 .submissions-list {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--overlay-light);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--overlay-medium);
   overflow: hidden;
 }
 
 .sub-header-row {
   display: flex;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--overlay-light);
   font-size: 0.8rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--overlay-medium);
 }
 
 .submission-row {
   display: flex;
   align-items: center;
   padding: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--overlay-light);
   transition: all 0.2s;
 }
 
 .submission-row:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-medium);
 }
 
 .submission-row:last-child {
@@ -286,7 +286,7 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   padding: 2px 6px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-heavy);
   border-radius: 6px;
   margin-left: 8px;
 }
@@ -360,9 +360,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--overlay-light);
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--overlay-medium);
 }
 
 .c-name {
@@ -375,7 +375,7 @@
 .c-time {
   font-size: 0.8rem;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-heavy);
   padding: 3px 8px;
   border-radius: 6px;
 }
