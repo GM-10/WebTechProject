@@ -95,19 +95,56 @@ const startServer = async () => {
   });
 
   // 2. Background DB Connection
-  try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/placement_ecosystem', {
-      serverSelectionTimeoutMS: 5000, 
-    });
-    console.log('✅ MongoDB connected successfully');
+    try {
+      console.log('Attempting to connect to MongoDB with URI:', MONGO_URI.split('@')[0] + '@***');
+      await mongoose.connect(MONGO_URI, {
+        serverSelectionTimeoutMS: 5000, 
+      });
+      console.log('✅ MongoDB connected successfully');
+    } catch (primaryErr) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Primary MongoDB connection failed. Initializing MongoMemoryServer for development fallback...');
+        const { MongoMemoryServer } = require('mongodb-memory-server');
+        const mongod = await MongoMemoryServer.create();
+        const uri = mongod.getUri();
+        await mongoose.connect(uri);
+        console.log('Connected to In-Memory MongoDB at:', uri);
+      } else {
+        throw primaryErr;
+      }
+    }
 
-    // Quick Seed Check
-    const User = require('./models/User');
-    const cdcExists = await User.findOne({ role: 'cdc' });
-    if (!cdcExists) {
-      console.log('🌱 Fresh DB: Running auto-seed...');
-      const { autoSeed } = require('./seedStudents');
-      await autoSeed();
+    try {
+      // Seeding logic
+      const User = require('./models/User');
+      const Job = require('./models/Job');
+      const { Question } = require('./models/Test');
+      
+      const cdcExists = await User.findOne({ role: 'cdc' });
+      if (!cdcExists) {
+        console.log('🌱 Fresh DB: Running auto-seed...');
+        const { autoSeed } = require('./seedStudents');
+        await autoSeed();
+        console.log('Auto-seed complete!');
+      }
+
+      const jobsCount = await Job.countDocuments();
+      if (jobsCount === 0) {
+        console.log('No companies found — running company seed...');
+        const { autoSeedCompanies } = require('./seedCompanies');
+        await autoSeedCompanies();
+        console.log('Company seed complete!');
+      }
+
+      const questionsCount = await Question.countDocuments();
+      if (questionsCount < 170) {
+        console.log(`Question bank expansion needed (${questionsCount}/180) — running seed...`);
+        const { seedQuestions } = require('./seedQuestions');
+        await seedQuestions();
+        console.log('Domain expansion seed complete!');
+      }
+    } catch (seedErr) {
+      console.warn('Auto-seed warning:', seedErr.message);
     }
   } catch (err) {
     console.error('❌ MongoDB connection failed:', err.message);
