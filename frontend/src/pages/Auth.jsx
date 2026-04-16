@@ -36,10 +36,19 @@ export default function Auth() {
       sessionStorage.setItem('user', JSON.stringify(res.data.user));
 
       setLoading(false);
-      navigate(res.data.user.role === 'cdc' ? '/app/analytics' : '/app/dashboard');
+      const isElevated = res.data.user.role === 'cdc' || res.data.user.role === 'admin';
+      navigate(isElevated ? '/app/analytics' : '/app/dashboard');
     } catch (err) {
       console.error('Auth error:', err);
-      alert(err.response?.data?.msg || 'Authentication failed');
+      let errorMsg = 'Authentication failed';
+      
+      if (!err.response) {
+        errorMsg = 'Backend server is unreachable. Please ensure it is running on port 5000 and MongoDB is connected.';
+      } else {
+        errorMsg = err.response.data?.msg || 'Invalid Credentials';
+      }
+      
+      alert(errorMsg);
       setLoading(false);
     }
   };

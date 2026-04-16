@@ -118,7 +118,7 @@ router.get('/summary', auth, async (req, res) => {
 // @desc    Export placement data as CSV
 // @access  Private (CDC only)
 router.get('/export', auth, async (req, res) => {
-  if (req.user.role !== 'cdc') {
+  if (!['cdc', 'admin'].includes(req.user.role)) {
     return res.status(403).json({ msg: 'Access denied' });
   }
 

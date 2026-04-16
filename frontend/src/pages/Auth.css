@@ -62,8 +62,8 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--overlay-border);
+  background: var(--overlay-medium);
   color: var(--text-muted);
 }
 
@@ -130,8 +130,8 @@
 .auth-input-group select {
   width: 100%;
   padding: 0.8rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--overlay-medium);
+  border: 1px solid var(--overlay-border);
   border-radius: 12px;
   color: var(--text-main);
   font-family: inherit;

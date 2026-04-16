@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Application = require('../models/Application');
 const Job = require('../models/Job');
 const CDCStudentProfile = require('../models/CDCStudentProfile');
+const { TestResult } = require('../models/Test');
 
 // @route   GET api/dashboard/stats
 // @desc    Get role-based dashboard statistics
@@ -56,13 +57,21 @@ router.get('/stats', auth, async (req, res) => {
         return count + app.rounds.filter(r => r.status === 'upcoming').length;
       }, 0);
 
+      // Integration: Calculate actual readiness based on test history
+      const testResults = await TestResult.find({ student: req.user.id });
+      const avgScore = testResults.length > 0 
+        ? Math.round(testResults.reduce((acc, curr) => acc + curr.score, 0) / testResults.length)
+        : 0;
+      
+      const readinessValue = avgScore > 0 ? `${avgScore}%` : 'New';
+
       return res.json({
         role: 'student',
         stats: [
           { label: 'Applications', value: appliedCount },
           { label: 'Offers', value: offersCount },
           { label: 'Interviews', value: upcomingInterviewsCount },
-          { label: 'Readiness', value: '85%' }
+          { label: 'Readiness', value: readinessValue }
         ]
       });
     }

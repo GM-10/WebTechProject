@@ -66,7 +66,7 @@
 
 .circle-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.05);
+  stroke: var(--overlay-medium);
   stroke-width: 2.5;
 }
 
@@ -83,7 +83,7 @@
 }
 
 .percentage {
-  fill: #fff;
+  fill: var(--text-main);
   font-family: inherit;
   font-size: 0.5rem;
   font-weight: 700;
@@ -170,14 +170,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--overlay-light);
+  border: 1px solid var(--overlay-medium);
   border-radius: 12px;
 }
 
 .job-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-medium);
+  border-color: var(--overlay-border);
   transform: translateX(4px);
 }
 
@@ -219,7 +219,7 @@
 }
 
 .border-btn {
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--overlay-border);
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
 }
@@ -331,14 +331,14 @@
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--overlay-light);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--overlay-medium);
   transition: all 0.3s ease;
 }
 
 .activity-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-medium);
   transform: translateX(4px);
 }
 

@@ -31,8 +31,8 @@
   color: var(--text-muted);
   font-style: italic;
   font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: var(--overlay-light);
+  border: 1px dashed var(--overlay-border);
   border-radius: 12px;
   width: 100%;
 }

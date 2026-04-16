@@ -83,7 +83,7 @@
 
 .nav-link:hover {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-medium);
 }
 
 .nav-link.active {
@@ -174,7 +174,7 @@
 
 
 .btn-icon {
-  background: rgba(255,255,255,0.05);
+  background: var(--overlay-medium);
   border: 1px solid var(--border-color);
   color: var(--text-muted);
   width: 40px;
@@ -190,7 +190,7 @@
 
 .btn-icon:hover {
   color: var(--text-main);
-  background: rgba(255,255,255,0.1);
+  background: var(--overlay-border);
 }
 
 .badge {

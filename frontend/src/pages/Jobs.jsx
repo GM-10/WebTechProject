@@ -24,6 +24,7 @@ import {
   Plus,
   Pencil
 } from 'lucide-react';
+import CompanyModal from '../components/CompanyModal';
 import './Jobs.css';
 
 const filterOptions = {
@@ -48,6 +49,8 @@ export default function Jobs() {
   const [expandedJob, setExpandedJob] = useState(null);
   const [appliedJobs, setAppliedJobs] = useState(new Set());
   const [showApplyModal, setShowApplyModal] = useState(null);
+  const [showCompanyModal, setShowCompanyModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -71,7 +74,7 @@ export default function Jobs() {
       }
     };
     fetchJobs();
-  }, []);
+  }, [refreshKey]);
 
   const toggleSave = (id) => {
     setSavedJobs(prev => {
@@ -121,7 +124,7 @@ export default function Jobs() {
       <div className="jobs-container animate-fade-in stagger-1">
         <div className="coming-soon-page">
           <h2>Loading Jobs...</h2>
-          <p>Finding the best opportunities for you.</p>
+          {!isCDC && <p>Finding the best opportunities for you.</p>}
         </div>
       </div>
     );
@@ -158,7 +161,7 @@ export default function Jobs() {
             </div>
           </div>
           {isCDC && (
-             <button className="btn btn-primary ml-4" onClick={() => navigate('/app/cdc-companies')}>
+             <button className="btn btn-primary ml-4" onClick={() => setShowCompanyModal(true)}>
                <Plus size={18} /> Add New Drive
              </button>
           )}
@@ -439,6 +442,14 @@ export default function Jobs() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Company Modal for Adding New Drive */}
+      {showCompanyModal && (
+        <CompanyModal 
+          onClose={() => setShowCompanyModal(false)} 
+          onSave={() => setRefreshKey(prev => prev + 1)} 
+        />
       )}
     </div>
   );

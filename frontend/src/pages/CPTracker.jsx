@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Code2, Trophy, BarChart2, TrendingUp, AlertCircle, RefreshCw, Zap, Target, BookOpen, CheckCircle2 } from 'lucide-react';
 import api from '../utils/api';
 import './CPTracker.css';
@@ -109,8 +110,21 @@ export default function CPTracker() {
       )}
 
       {error && (
-        <div className="panel glass-panel mb-6" style={{ color: 'var(--error)' }}>
-          {error}
+        <div className="panel glass-panel mb-6" style={{ textAlign: 'center', padding: '3rem 1.5rem', border: '1px dashed rgba(239, 68, 68, 0.3)' }}>
+          {error.includes("There is no profile") ? (
+            <>
+              <AlertCircle size={40} style={{ margin: '0 auto 1rem', color: 'var(--error)', opacity: 0.8 }} />
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-light)' }}>Profile Required</h3>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
+                You need to set up your profile and link your competitive programming accounts to unlock the CP Tracker.
+              </p>
+              <Link to="/profile" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                Go to Profile
+              </Link>
+            </>
+          ) : (
+            <div style={{ color: 'var(--error)' }}>{error}</div>
+          )}
         </div>
       )}
 

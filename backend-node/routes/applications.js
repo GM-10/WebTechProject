@@ -102,7 +102,7 @@ router.put('/:id', auth, async (req, res) => {
 // @desc    Schedule a round for an application
 // @access  Private (CDC only)
 router.post('/schedule/:id/:roundIndex', auth, async (req, res) => {
-  if (req.user.role !== 'cdc') {
+  if (!['cdc', 'admin'].includes(req.user.role)) {
     return res.status(403).json({ msg: 'Only CDC can schedule interviews' });
   }
 

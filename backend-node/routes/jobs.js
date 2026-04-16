@@ -162,7 +162,7 @@ router.get('/cdc/all', auth, async (req, res) => {
 // @desc    Create a job
 // @access  Private (CDC only)
 router.post('/', auth, async (req, res) => {
-  if (req.user.role !== 'cdc') {
+  if (!['cdc', 'admin'].includes(req.user.role)) {
     return res.status(401).json({ msg: 'User not authorized to post jobs' });
   }
 
