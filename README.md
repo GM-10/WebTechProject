@@ -90,7 +90,7 @@ A comprehensive, full-stack placement management system built with the **MERN St
 
 ##  Security & Optimization
 - **JWT Authentication**: Secure stateless authentication for all private routes.
-- **Role-Based Access Control (RBAC)**: Distinct permissions for `student`, `cdc`, and `admin` roles.
+- **Role-Based Access Control (RBAC)**: Distinct permissions for `student` and `cdc` roles.
 - **Virtual DOM**: Optimized UI updates using React's efficiency.
 - **Glassmorphism UI**: Modern, premium aesthetics using CSS Backdrop Filters.
 
