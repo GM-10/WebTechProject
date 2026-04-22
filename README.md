@@ -1,4 +1,4 @@
-# PlacementEcosystem: Smart Campus Recruitment Platform
+# Placement Ecosystem: Smart Campus Recruitment Platform
 
 A comprehensive, full-stack placement management system built with the **MERN Stack** (MongoDB, Express, React, Node.js). This platform streamlines the recruitment lifecycle for both students and the Career Development Cell (CDC) through data-driven insights and real-time automation.
 
@@ -7,16 +7,16 @@ A comprehensive, full-stack placement management system built with the **MERN St
 ## Key Features
 
 ### For Students
-- **ATS Checker **: Upload your resume (PDF/DOCX) and get an instant AI-powered compatibility score based on target roles.
-- **Mock Test Arena **: Practice with 180+ technical and aptitude questions across 6 domains with real-time performance analytics.
-- **Skill Gap Analysis **: Compare your current skill set against industry standard templates (SDE, Data Science) to identify missing competencies.
-- **Unified Profile **: Manage your academic records, skills, and application history in a premium "Glassmorphism" UI.
+- **ATS Checker**: Upload your resume (PDF/DOCX) and get an instant AI-powered compatibility score based on target roles.
+- **Mock Test Arena**: Practice with 180+ technical and aptitude questions across 6 domains with real-time performance analytics.
+- **Skill Gap Analysis**: Compare your current skill set against industry standard templates (SDE, Data Science) to identify missing competencies.
+- **Unified Profile**: Manage your academic records, skills, and application history in a premium "Glassmorphism" UI.
 
 ### 🏢 For CDC / Admins
-- **Centralized Dashboard **: Monitor placement trends, average CTC, and branch-wise performance using interactive charts.
-- **Student Database **: Advanced filtering for students based on CGPA, backlogs, branch, and eligibility status.
-- **Job Management **: Create, edit, and track job listings with automated eligibility checking for students.
-- **Real-Time Notifications **: Instantly notify students of application status updates via WebSockets.
+- **Centralized Dashboard**: Monitor placement trends, average CTC, and branch-wise performance using interactive charts.
+- **Student Database**: Advanced filtering for students based on CGPA, backlogs, branch, and eligibility status.
+- **Job Management**: Create, edit, and track job listings with automated eligibility checking for students.
+- **Real-Time Notifications**: Instantly notify students of application status updates via WebSockets.
 
 ---
 
