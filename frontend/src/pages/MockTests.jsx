@@ -592,7 +592,6 @@ export default function MockTests() {
           </div>
         </div>
 
-<<<<<<< HEAD
         {/* Right Col - Stats & History */}
         <div className="tests-side">
           {/* Performance Overview */}
@@ -626,32 +625,6 @@ export default function MockTests() {
                 );
               })}
             </div>
-=======
-        <div className="arena-sidebar">
-          <div className="sidebar-pnl glass-panel gradient-border">
-            <h3 className="panel-title mb-6"><BarChart2 size={18} /> Global Rank Trends</h3>
-            {history.length > 0 ? (
-               <div className="rank-stats">
-                  <div className="rank-main">
-                    <span className="rank-val">{Math.round(history.reduce((a,b) => a + b.score, 0) / history.length)}%</span>
-                    <span className="rank-lbl">Current PPG</span>
-                  </div>
-                  <div className="rank-track-list mt-6">
-                    {testCategories.slice(0, 4).map(cat => {
-                      const cTests = history.filter(h => h.category === cat.id);
-                      const avg = cTests.length ? Math.round(cTests.reduce((a,b) => a + b.score, 0) / cTests.length) : 0;
-                      return (
-                        <div key={cat.id} className="rank-row">
-                          <span className="rr-name">{cat.id.toUpperCase()}</span>
-                          <div className="rr-track"><div className="rr-fill" style={{ width: `${avg}%`, background: cat.color }}/></div>
-                          <span className="rr-val">{avg}%</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-               </div>
-            ) : <p className="text-secondary text-center py-4">No simulations recorded yet.</p>}
->>>>>>> f3aa1c9562271b97bed949be46df9a5bd12ee8b9
           </div>
 
           <div className="sidebar-pnl glass-panel mt-6">

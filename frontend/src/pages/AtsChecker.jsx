@@ -34,12 +34,16 @@ export default function AtsChecker() {
       formData.append('resume', file);
 
       const res = await api.post('/profile/ats-analyze', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 120000
       });
       setResult(res.data);
     } catch (err) {
       console.error('ATS analysis error:', err);
-      alert(err.response?.data?.msg || 'Failed to run ATS analysis. Ensure backend is running and API key is configured.');
+      const timeoutMsg = 'ATS analysis timed out. Please retry in a few seconds.';
+      const serverMsg = err.response?.data?.msg;
+      const fallback = 'Failed to run ATS analysis. Please ensure backend and local model are running.';
+      alert(err.code === 'ECONNABORTED' ? timeoutMsg : (serverMsg || fallback));
     } finally {
       setIsAnalyzing(false);
     }

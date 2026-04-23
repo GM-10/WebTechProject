@@ -146,10 +146,6 @@ const startServer = async () => {
     } catch (seedErr) {
       console.warn('Auto-seed warning:', seedErr.message);
     }
-  } catch (err) {
-    console.error('❌ MongoDB connection failed:', err.message);
-    console.error('👉 ACTION REQUIRED: Ensure your current IP is whitelisted in MongoDB Atlas.');
-  }
 };
 
 startServer();

@@ -118,10 +118,14 @@ async function runSeed() {
     // 2. Base Profile
     const profile = new Profile({
       user: user._id,
+      email,
       rollNo,
       department: s.branch,
       cgpa: String(s.cgpa),
       year: 'Final Year',
+      phone: `+91 ${Math.floor(Math.random() * 9000000000 + 1000000000)}`,
+      location: ['Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Pune'][Math.floor(Math.random() * 5)] + ', India',
+      portfolio: `${s.name.split(' ')[0].toLowerCase()}dev.dev`,
       skills: s.skills.map((name, idx) => ({
         name,
         level: 50 + Math.floor(Math.random() * 40),

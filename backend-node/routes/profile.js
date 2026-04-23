@@ -8,7 +8,8 @@ const multer = require('multer');
 const pdfParseModule = require('pdf-parse');
 const mammoth = require('mammoth');
 
-const pdfParse = pdfParseModule.default || pdfParseModule;
+const pdfParseLegacy = pdfParseModule.default || pdfParseModule;
+const PDFParseV2 = pdfParseModule.PDFParse;
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -237,8 +238,25 @@ async function extractResumeText(file) {
   const name = (file.originalname || '').toLowerCase();
 
   if (mime.includes('pdf') || name.endsWith('.pdf')) {
-    const parsed = await pdfParse(file.buffer);
-    return (parsed.text || '').trim();
+    // Support both pdf-parse v1 (function) and v2 (PDFParse class).
+    if (typeof pdfParseLegacy === 'function') {
+      const parsed = await pdfParseLegacy(file.buffer);
+      return (parsed.text || '').trim();
+    }
+
+    if (typeof PDFParseV2 === 'function') {
+      const parser = new PDFParseV2({ data: file.buffer });
+      try {
+        const parsed = await parser.getText();
+        return (parsed.text || '').trim();
+      } finally {
+        if (typeof parser.destroy === 'function') {
+          await parser.destroy();
+        }
+      }
+    }
+
+    throw new Error('PDF parser is not configured correctly.');
   }
 
   if (
@@ -257,15 +275,17 @@ async function extractResumeText(file) {
 }
 
 async function runExternalAtsAnalysis({ targetRole, profile, resumeText }) {
+  const apiUrl = process.env.ATS_API_URL || 'https://api.openai.com/v1/chat/completions';
   const apiKey = process.env.OPENAI_API_KEY || process.env.ATS_API_KEY;
-  if (!apiKey) {
+  const isLocalAts = apiUrl.includes('localhost:11434') || apiUrl.includes('127.0.0.1:11434');
+  if (!apiKey && !isLocalAts) {
     const err = new Error('ATS_API_KEY_MISSING');
     err.code = 'ATS_API_KEY_MISSING';
     throw err;
   }
 
-  const apiUrl = process.env.ATS_API_URL || 'https://api.openai.com/v1/chat/completions';
   const model = process.env.ATS_MODEL || 'gpt-4o-mini';
+  const timeoutMs = Number(process.env.ATS_API_TIMEOUT_MS || 90000);
 
   const profileSkills = (profile.skills || [])
     .map((s) => (typeof s === 'string' ? s : s.name))
@@ -283,22 +303,38 @@ async function runExternalAtsAnalysis({ targetRole, profile, resumeText }) {
     resumeText.slice(0, 12000)
   ].join('\n');
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: 'You are a strict ATS scoring engine. Output valid JSON only.' },
-        { role: 'user', content: prompt }
-      ]
-    })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response;
+  try {
+    response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        'Content-Type': 'application/json'
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        temperature: 0.2,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: 'You are a strict ATS scoring engine. Output valid JSON only.' },
+          { role: 'user', content: prompt }
+        ]
+      })
+    });
+  } catch (fetchErr) {
+    if (fetchErr.name === 'AbortError') {
+      const err = new Error(`ATS API timeout after ${timeoutMs}ms`);
+      err.code = 'ATS_API_TIMEOUT';
+      throw err;
+    }
+    throw fetchErr;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const text = await response.text();
@@ -320,17 +356,35 @@ async function runExternalAtsAnalysis({ targetRole, profile, resumeText }) {
   return parsed;
 }
 
+async function getOrCreateProfile(userId, populateFields = ['name', 'email', 'avatar']) {
+  let profile = await Profile.findOne({ user: userId }).populate('user', populateFields);
+  if (profile) return profile;
+
+  const user = await User.findById(userId).select(populateFields.join(' '));
+  if (!user) return null;
+
+  await Profile.create({
+    user: userId,
+    email: user.email || '',
+    skills: [],
+    education: [],
+    achievements: []
+  });
+
+  return Profile.findOne({ user: userId }).populate('user', populateFields);
+}
+
 // @route   GET api/profile/me
 // @desc    Get current user's profile
 // @access  Private
 router.get('/me', auth, async (req, res) => {
   try {
     const [profile, cdcProfile] = await Promise.all([
-      Profile.findOne({ user: req.user.id }).populate('user', ['name', 'email', 'avatar']),
+      getOrCreateProfile(req.user.id, ['name', 'email', 'avatar']),
       CDCStudentProfile.findOne({ user: req.user.id }).lean()
     ]);
 
-    if (!profile) return res.status(400).json({ msg: 'There is no profile for this user' });
+    if (!profile) return res.status(404).json({ msg: 'User not found' });
     res.json({
       ...profile.toObject(),
       cdcProfile: cdcProfile || null
@@ -368,8 +422,8 @@ router.post('/', auth, async (req, res) => {
 // @access  Private
 router.get('/skill-gap', auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate('user', ['name', 'email']);
-    if (!profile) return res.status(400).json({ msg: 'There is no profile for this user' });
+    const profile = await getOrCreateProfile(req.user.id, ['name', 'email']);
+    if (!profile) return res.status(404).json({ msg: 'User not found' });
 
     const skillMap = buildSkillMap(profile.skills || []);
     const roleAnalyses = ROLE_TEMPLATES.map((template) => computeRoleMatch(template, skillMap));
@@ -391,8 +445,8 @@ router.get('/skill-gap', auth, async (req, res) => {
 router.post('/ats-analyze', auth, upload.single('resume'), async (req, res) => {
   try {
     const { targetRole } = req.body || {};
-    const profile = await Profile.findOne({ user: req.user.id }).populate('user', ['name', 'email']);
-    if (!profile) return res.status(400).json({ msg: 'There is no profile for this user' });
+    const profile = await getOrCreateProfile(req.user.id, ['name', 'email']);
+    if (!profile) return res.status(404).json({ msg: 'User not found' });
 
     if (!req.file) {
       return res.status(400).json({ msg: 'Resume file is required for ATS analysis.' });
